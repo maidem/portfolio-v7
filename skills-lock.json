@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "nuxt4-patterns": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "computedHash": "af1a31e0470c24e1ada7f5b9a4a4a2b923659c8ef31f76a8d231242b99809418"
+    }
+  }
+}

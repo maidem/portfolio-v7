@@ -1,0 +1,27 @@
+{
+  "name": "portfolio-v7",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/content": "^3.13.0",
+    "@nuxtjs/color-mode": "^4.0.0",
+    "better-sqlite3": "^12.9.0",
+    "gray-matter": "^4.0.3",
+    "jetbrains-mono": "^1.0.6",
+    "marked": "^18.0.2",
+    "nodemailer": "^8.0.7",
+    "nuxt": "^4.4.2",
+    "vue": "^3.5.33",
+    "vue-router": "^5.0.6"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^8.0.0"
+  }
+}
