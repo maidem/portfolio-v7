@@ -38,9 +38,9 @@ ENV NODE_ENV=production
 ENV NITRO_HOST=0.0.0.0
 ENV NITRO_PORT=3000
 
-# Health Check (wget ist in Alpine vorinstalliert, viel schneller als node-Start)
+# Health Check (wget auf IPv4 127.0.0.1, nicht localhost/IPv6)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+  CMD wget --quiet --tries=1 --spider http://127.0.0.1:3000/ || exit 1
 
 EXPOSE 3000
 
