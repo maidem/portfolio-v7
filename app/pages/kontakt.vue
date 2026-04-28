@@ -177,28 +177,51 @@ onMounted(() => {
   if (!mosparoEnabled.value) return;
 
   const initWidget = () => {
-    if (!mosparoContainer.value || !(window as any).mosparo) return;
-    new (window as any).mosparo(
-      mosparoContainer.value,
-      config.public.mosparoUrl,
-      config.public.mosparoUuid,
-      config.public.mosparoPublicKey,
-      { loadCssFile: true },
-    );
+    const container = mosparoContainer.value;
+    if (!container) {
+      console.warn("Mosparo: container not ready yet");
+      return false;
+    }
+    if (!(window as any).mosparo) {
+      console.warn("Mosparo: mosparo lib not loaded");
+      return false;
+    }
+    try {
+      new (window as any).mosparo(
+        container,
+        config.public.mosparoUrl,
+        config.public.mosparoUuid,
+        config.public.mosparoPublicKey,
+        { loadCssFile: true },
+      );
+      console.log("Mosparo widget initialized successfully");
+      return true;
+    } catch (e) {
+      console.error("Mosparo init failed:", e);
+      return false;
+    }
+  };
+
+  // Try with increasing delays
+  const tryInit = (delay: number, retries: number) => {
+    setTimeout(() => {
+      if (!initWidget() && retries > 0) {
+        tryInit(delay * 1.5, retries - 1);
+      }
+    }, delay);
   };
 
   if ((window as any).mosparo) {
-    nextTick(initWidget);
+    tryInit(50, 3);
     return;
   }
 
   const script = document.createElement("script");
   script.src = `${config.public.mosparoUrl}/build/mosparo-frontend.js`;
+  script.onerror = () => console.error("Failed to load Mosparo script");
   script.onload = () => {
-    nextTick(() => {
-      // Extra delay to ensure DOM is ready
-      setTimeout(initWidget, 100);
-    });
+    console.log("Mosparo script loaded");
+    tryInit(50, 3);
   };
   document.head.appendChild(script);
 });
