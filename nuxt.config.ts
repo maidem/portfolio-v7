@@ -23,6 +23,10 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
+    // Server-only Mosparo keys. Either MOSPARO_PRIVATE_KEY (preferred) or
+    // MOSPARO_API_SECRET is used as the project's private key for HMAC signing.
+    // MOSPARO_PUBLIC_KEY is used both for frontend init and Basic-Auth.
+    mosparoPrivateKey: process.env.MOSPARO_PRIVATE_KEY || "",
     mosparoApiKey: process.env.MOSPARO_API_KEY || "",
     mosparoApiSecret: process.env.MOSPARO_API_SECRET || "",
     smtp: {

@@ -82,7 +82,7 @@
 
       <!-- Mosparo anti-spam widget (client-side only, requires MOSPARO_URL env) -->
       <div v-if="mosparoEnabled" class="mosparo-wrapper">
-        <div ref="mosparoContainer"></div>
+        <div id="mosparo-box"></div>
       </div>
 
       <!-- Datenschutz Pflichtfeld -->
@@ -150,15 +150,15 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted, nextTick } from "vue";
+import { reactive, ref, computed, onMounted, onBeforeUnmount } from "vue";
 
 definePageMeta({ layout: "default" });
 useHead({ title: "Kontakt – Maik Demuth" });
 
 const config = useRuntimeConfig();
 const mosparoEnabled = computed(() => !!config.public.mosparoUrl);
-const mosparoContainer = ref<HTMLElement | null>(null);
 const formRef = ref<HTMLFormElement | null>(null);
+let mosparoInstance: any = null;
 
 const form = reactive({
   name: "",
@@ -172,58 +172,69 @@ const privacyAccepted = ref(false);
 const status = ref<"idle" | "sending" | "success" | "error">("idle");
 const errorMessage = ref("");
 
-// Mosparo widget — browser-only, initialised after mount (nuxt4-patterns: onMounted for client APIs)
+// Mosparo widget — browser-only init (per official docs: container HTML ID, not DOM ref)
+// https://documentation.mosparo.io/de/docs/integration/custom
 onMounted(() => {
   if (!mosparoEnabled.value) return;
 
   const initWidget = () => {
-    const container = mosparoContainer.value;
-    if (!container) {
-      console.warn("Mosparo: container not ready yet");
-      return false;
+    const containerId = "mosparo-box";
+    if (!document.getElementById(containerId)) {
+      console.warn("[mosparo] container #mosparo-box not in DOM");
+      return;
     }
     if (!(window as any).mosparo) {
-      console.warn("Mosparo: mosparo lib not loaded");
-      return false;
+      console.warn("[mosparo] mosparo library not loaded");
+      return;
     }
     try {
-      new (window as any).mosparo(
-        container,
+      mosparoInstance = new (window as any).mosparo(
+        containerId,
         config.public.mosparoUrl,
         config.public.mosparoUuid,
         config.public.mosparoPublicKey,
-        { loadCssFile: true },
+        { loadCssResource: true },
       );
-      console.log("Mosparo widget initialized successfully");
-      return true;
+      console.log("[mosparo] widget initialized");
     } catch (e) {
-      console.error("Mosparo init failed:", e);
-      return false;
+      console.error("[mosparo] init failed", e);
     }
   };
 
-  // Try with increasing delays
-  const tryInit = (delay: number, retries: number) => {
-    setTimeout(() => {
-      if (!initWidget() && retries > 0) {
-        tryInit(delay * 1.5, retries - 1);
-      }
-    }, delay);
-  };
-
+  // Already loaded? init immediately on next tick.
   if ((window as any).mosparo) {
-    tryInit(50, 3);
+    requestAnimationFrame(initWidget);
+    return;
+  }
+
+  // Reuse existing script tag if present (e.g. SPA navigation back)
+  const scriptUrl = `${config.public.mosparoUrl}/build/mosparo-frontend.js`;
+  const existing = document.querySelector(
+    `script[src="${scriptUrl}"]`,
+  ) as HTMLScriptElement | null;
+  if (existing) {
+    existing.addEventListener("load", () => requestAnimationFrame(initWidget));
     return;
   }
 
   const script = document.createElement("script");
-  script.src = `${config.public.mosparoUrl}/build/mosparo-frontend.js`;
-  script.onerror = () => console.error("Failed to load Mosparo script");
-  script.onload = () => {
-    console.log("Mosparo script loaded");
-    tryInit(50, 3);
-  };
+  script.src = scriptUrl;
+  script.defer = true;
+  script.onerror = () => console.error("[mosparo] failed to load script");
+  script.onload = () => requestAnimationFrame(initWidget);
   document.head.appendChild(script);
+});
+
+onBeforeUnmount(() => {
+  // Best-effort cleanup if mosparo exposes destroy/reset
+  if (mosparoInstance && typeof mosparoInstance.reset === "function") {
+    try {
+      mosparoInstance.reset();
+    } catch {
+      // ignore
+    }
+  }
+  mosparoInstance = null;
 });
 
 const onSubmit = async () => {

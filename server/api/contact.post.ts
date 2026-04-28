@@ -47,57 +47,155 @@ export default defineEventHandler(async (event) => {
 
   const config = useRuntimeConfig();
 
-  // Mosparo verification (optional — only active when MOSPARO_URL is configured)
+  // Mosparo verification (11-step manual verification per official docs)
+  // https://documentation.mosparo.io/de/docs/integration/custom
   if (config.public.mosparoUrl) {
-    const mosparoSubmitToken = (body?.mosparoSubmitToken || "").trim();
-    const mosparoValidationToken = (body?.mosparoValidationToken || "").trim();
+    const submitToken = (body?.mosparoSubmitToken || "").trim();
+    const validationToken = (body?.mosparoValidationToken || "").trim();
 
-    if (!mosparoSubmitToken || !mosparoValidationToken) {
+    if (!submitToken || !validationToken) {
       throw createError({
         statusCode: 400,
         statusMessage: "Sicherheitsüberprüfung fehlt.",
       });
     }
 
-    const formData = { name, email, subject, message };
-    const requestBody = {
-      submitToken: mosparoSubmitToken,
-      validationToken: mosparoValidationToken,
-      formData,
+    // privateKey is used for HMAC signatures, publicKey for Basic Auth
+    // We accept either MOSPARO_PRIVATE_KEY or MOSPARO_API_SECRET as the private key,
+    // and either MOSPARO_PUBLIC_KEY or MOSPARO_API_KEY as the public key (backwards compat)
+    const privateKey =
+      (config.mosparoPrivateKey as string) ||
+      (config.mosparoApiSecret as string);
+    const publicKey =
+      (config.public.mosparoPublicKey as string) ||
+      (config.mosparoApiKey as string);
+
+    if (!privateKey || !publicKey) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: "Mosparo ist nicht korrekt konfiguriert.",
+      });
+    }
+
+    // Step 3: Prepare form data (use field names matching the form's name attribute)
+    const rawFormData: Record<string, string> = {
+      name,
+      email,
+      subject,
+      message,
     };
-    const jsonBody = JSON.stringify(requestBody);
-    const hmac = createHmac("sha256", config.mosparoApiSecret as string)
-      .update(jsonBody)
+    // Replace CRLF with LF
+    const preparedFormData: Record<string, string> = {};
+    for (const [k, v] of Object.entries(rawFormData)) {
+      preparedFormData[k] = v.replace(/\r\n/g, "\n");
+    }
+
+    // Step 4: Hash each field value with SHA256 and sort alphabetically
+    const { createHash } = await import("node:crypto");
+    const hashedFormData: Record<string, string> = {};
+    const sortedKeys = Object.keys(preparedFormData).sort();
+    for (const k of sortedKeys) {
+      hashedFormData[k] = createHash("sha256")
+        .update(preparedFormData[k]!)
+        .digest("hex");
+    }
+
+    // Step 5: formDataSignature = HMAC-SHA256(JSON(hashedFormData), privateKey)
+    const jsonHashedFormData = JSON.stringify(hashedFormData);
+    const formDataSignature = createHmac("sha256", privateKey)
+      .update(jsonHashedFormData)
       .digest("hex");
-    const authHeader = Buffer.from(`${config.mosparoApiKey}:${hmac}`).toString(
+
+    // Step 6: validationSignature = HMAC-SHA256(validationToken, privateKey)
+    const validationSignature = createHmac("sha256", privateKey)
+      .update(validationToken)
+      .digest("hex");
+
+    // Step 7: verificationSignature = HMAC-SHA256(validationSignature + formDataSignature, privateKey)
+    const verificationSignature = createHmac("sha256", privateKey)
+      .update(validationSignature + formDataSignature)
+      .digest("hex");
+
+    // Step 8: Build request data
+    const apiEndpoint = "/api/v1/verification/verify";
+    const requestData = {
+      submitToken,
+      validationSignature,
+      formSignature: formDataSignature,
+      formData: hashedFormData,
+    };
+
+    // Step 9: requestSignature = HMAC-SHA256(apiEndpoint + JSON(requestData), privateKey)
+    const jsonRequestData = JSON.stringify(requestData);
+    const requestSignature = createHmac("sha256", privateKey)
+      .update(apiEndpoint + jsonRequestData)
+      .digest("hex");
+
+    // Step 10: POST to mosparo with Basic Auth (publicKey:requestSignature)
+    const authHeader = Buffer.from(`${publicKey}:${requestSignature}`).toString(
       "base64",
     );
 
-    const verifyRes = await fetch(
-      `${config.public.mosparoUrl}/api/v1/verification/verify`,
-      {
+    let verifyRes: Response;
+    try {
+      verifyRes = await fetch(`${config.public.mosparoUrl}${apiEndpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Basic ${authHeader}`,
         },
-        body: jsonBody,
-      },
-    );
+        body: jsonRequestData,
+      });
+    } catch (e: any) {
+      throw createError({
+        statusCode: 502,
+        statusMessage: `Mosparo nicht erreichbar: ${e?.message || "Unbekannt"}`,
+      });
+    }
 
     if (!verifyRes.ok) {
+      const errText = await verifyRes.text().catch(() => "");
+      throw createError({
+        statusCode: 400,
+        statusMessage: `Sicherheitsüberprüfung fehlgeschlagen (HTTP ${verifyRes.status}). ${errText}`,
+      });
+    }
+
+    // Step 11: Verify response
+    const verifyData = (await verifyRes.json()) as {
+      valid?: boolean;
+      verificationSignature?: string;
+      verifiedFields?: Record<string, string>;
+      error?: boolean;
+      errorMessage?: string;
+    };
+
+    if (verifyData.error) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: `Mosparo Fehler: ${verifyData.errorMessage || "Unbekannt"}`,
+      });
+    }
+
+    if (
+      !verifyData.valid ||
+      verifyData.verificationSignature !== verificationSignature
+    ) {
       throw createError({
         statusCode: 400,
         statusMessage: "Sicherheitsüberprüfung fehlgeschlagen.",
       });
     }
 
-    const verifyData = (await verifyRes.json()) as { valid?: boolean };
-    if (!verifyData.valid) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Sicherheitsüberprüfung fehlgeschlagen.",
-      });
+    // Bypass protection: ensure all required fields were verified by mosparo
+    const verifiedFields = verifyData.verifiedFields || {};
+    for (const requiredField of ["name", "email", "message"]) {
+      if (!verifiedFields[requiredField]) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: `Pflichtfeld ${requiredField} wurde nicht verifiziert.`,
+        });
+      }
     }
   }
 
