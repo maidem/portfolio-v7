@@ -194,8 +194,12 @@ onMounted(() => {
 
   const script = document.createElement("script");
   script.src = `${config.public.mosparoUrl}/build/mosparo-frontend.js`;
-  script.defer = true;
-  script.onload = () => nextTick(initWidget);
+  script.onload = () => {
+    nextTick(() => {
+      // Extra delay to ensure DOM is ready
+      setTimeout(initWidget, 100);
+    });
+  };
   document.head.appendChild(script);
 });
 
