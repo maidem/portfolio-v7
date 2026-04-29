@@ -85,10 +85,6 @@
         />
       </fieldset>
 
-      <p class="required-hint">
-        <span class="req" aria-hidden="true">*</span> Pflichtfeld
-      </p>
-
       <!-- Mosparo anti-spam widget (client-side only, requires MOSPARO_URL env) -->
       <div v-if="mosparoEnabled" class="mosparo-wrapper">
         <div id="mosparo-box"></div>
@@ -102,6 +98,8 @@
             type="checkbox"
             data-mosparo-ignore-field
             :disabled="status === 'sending'"
+            required
+            aria-required="true"
           />
           <span>
             Ich habe die
@@ -109,9 +107,14 @@
               >Datenschutzerklärung</NuxtLink
             >
             gelesen und bin einverstanden.
+            <span class="req" aria-hidden="true">*</span>
           </span>
         </label>
       </div>
+
+      <p class="required-hint">
+        <span class="req" aria-hidden="true">*</span> Pflichtfeld
+      </p>
 
       <div class="actions">
         <button
@@ -489,6 +492,11 @@ const onSubmit = async () => {
 }
 
 /* Datenschutz Pflichtcheckbox */
+.field-check {
+  border: none;
+  padding: 0;
+}
+
 .field-check .check-label {
   display: flex;
   align-items: flex-start;

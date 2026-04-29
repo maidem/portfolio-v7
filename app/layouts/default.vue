@@ -244,8 +244,8 @@ const toggleTheme = () => {
   opacity: 0;
   transform: translateY(12px);
   transition:
-    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .layout.is-mounted {
   opacity: 1;
@@ -505,17 +505,26 @@ const toggleTheme = () => {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-.drawer-enter-active,
+.drawer-enter-active {
+  transition:
+    opacity 0.2s cubic-bezier(0, 0, 0.2, 1),
+    transform 0.22s cubic-bezier(0, 0, 0.2, 1);
+  transform-origin: top;
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
 .drawer-leave-active {
   transition:
-    opacity 0.25s ease,
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.12s cubic-bezier(0.4, 0, 1, 1),
+    transform 0.15s cubic-bezier(0.4, 0, 1, 1);
   transform-origin: top;
+  will-change: opacity, transform;
+  backface-visibility: hidden;
 }
 .drawer-enter-from,
 .drawer-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(-6px);
 }
 .submenu-enter-active,
 .submenu-leave-active {

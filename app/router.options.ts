@@ -1,29 +1,32 @@
 import type { RouterConfig } from "@nuxt/schema";
 
-// Wait for the page transition (`page` name, mode: out-in) to finish before
-// scrolling. This prevents the visible "jump" when navigating between pages
-// of different heights while the leave animation is still running.
+// Scroll strategy:
+// - savedPosition: restore immediately (browser back/forward)
+// - hash links: wait for the transition to finish, then smooth-scroll to anchor
+// - regular navigation: reset to top instantly BEFORE the leave animation so
+//   the new page always enters at y=0 and no scroll jump is visible.
 export default <RouterConfig>{
   scrollBehavior(to, from, savedPosition) {
-    return new Promise((resolve) => {
-      const nuxtApp = useNuxtApp();
-      const scroll = () => {
-        if (savedPosition) return resolve(savedPosition);
-        if (to.hash) {
-          const el = document.querySelector(to.hash);
-          if (el) {
-            return resolve({
-              el: to.hash,
-              top: 80, // offset for sticky header
-              behavior: "smooth",
-            });
-          }
-        }
-        resolve({ left: 0, top: 0 });
-      };
+    // Restore scroll for back/forward browser navigation
+    if (savedPosition) return savedPosition;
 
-      // Wait for the page transition end before scrolling so layout is stable.
-      nuxtApp.hooks.hookOnce("page:transition:finish", scroll);
-    });
+    if (to.hash) {
+      // Wait for the full transition before smooth-scrolling to the anchor
+      return new Promise((resolve) => {
+        const nuxtApp = useNuxtApp();
+        nuxtApp.hooks.hookOnce("page:transition:finish", () => {
+          const el = document.querySelector(to.hash);
+          resolve(
+            el
+              ? { el: to.hash, top: 80, behavior: "smooth" }
+              : { left: 0, top: 0 },
+          );
+        });
+      });
+    }
+
+    // For regular page navigation: scroll to top instantly so the leave
+    // animation plays at y=0 and the entering page is never offset.
+    return { left: 0, top: 0, behavior: "instant" };
   },
 };
