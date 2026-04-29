@@ -225,20 +225,25 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const smtp = config.smtp as {
-    host: string;
-    port: number;
-    secure: boolean;
-    user: string;
-    pass: string;
-    from: string;
-    to: string;
+  const smtp = {
+    host: (config.smtp?.host as string) || process.env.SMTP_HOST || "",
+    port: (config.smtp?.port as number) || Number(process.env.SMTP_PORT || 587),
+    secure:
+      (config.smtp?.secure as boolean) || process.env.SMTP_SECURE === "true",
+    user: (config.smtp?.user as string) || process.env.SMTP_USER || "",
+    pass:
+      (config.smtp?.pass as string) ||
+      process.env.SMTP_PASS ||
+      process.env.SMTP_PASSWORD ||
+      "",
+    from: (config.smtp?.from as string) || process.env.SMTP_FROM || "",
+    to: (config.smtp?.to as string) || process.env.SMTP_TO || "",
   };
 
   if (!smtp.host || !smtp.user || !smtp.pass || !smtp.from || !smtp.to) {
     throw createError({
       statusCode: 500,
-      statusMessage: "Mail-Server ist nicht konfiguriert.",
+      statusMessage: `Mail-Server ist nicht konfiguriert. (host: ${smtp.host ? "ok" : "fehlt"}, user: ${smtp.user ? "ok" : "fehlt"}, pass: ${smtp.pass ? "ok" : "fehlt"}, from: ${smtp.from ? "ok" : "fehlt"}, to: ${smtp.to ? "ok" : "fehlt"})`,
     });
   }
 
