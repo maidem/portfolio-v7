@@ -162,13 +162,3 @@ docker run -p 3000:3000 \
   -e SMTP_TO=... \
   portfolio-v7
 ```
-
-### Coolify
-
-Repository verbinden, Dockerfile-Build aktivieren, SMTP-Variablen im
-Environment setzen — fertig.
-
-## Lizenz
-
-Privates Projekt. Code zur persönlichen Nutzung, Inhalte (Texte, Bilder)
-sind urheberrechtlich geschützt © Maik Demuth.
