@@ -163,4 +163,53 @@ docker run -p 3000:3000 \
   portfolio-v7
 ```
 
-Test
+### Auto-Deploy via GitHub Actions + Coolify + Tailscale
+
+Bei jedem Push auf `main` wird automatisch ein neues Deployment in Coolify
+ausgelöst. Der GitHub Actions Runner verbindet sich dafür über Tailscale ins
+private Netzwerk und ruft die Coolify API auf.
+
+#### Voraussetzungen
+
+- Coolify läuft auf einem Server im Tailscale-Netzwerk
+- Die App ist in Coolify bereits angelegt und einmal manuell deployed
+
+#### Einmalige Einrichtung
+
+**1. Tailscale Auth Key erstellen**
+
+Im [Tailscale Admin Panel](https://login.tailscale.com/admin/settings/keys):
+
+- **Reusable**: an
+- **Ephemeral**: an (Runner wird nach dem Job automatisch entfernt)
+- **Expiration**: 90 Tage (Maximum)
+
+**2. Coolify API Token erstellen**
+
+In Coolify → **Keys & Tokens** → **API Tokens**:
+
+- Permission: `deploy` aktivieren
+- Expires: Never
+
+**3. GitHub Secrets anlegen**
+
+Im Repo unter **Settings → Secrets and variables → Actions**:
+
+| Secret               | Wert                   |
+| -------------------- | ---------------------- |
+| `TAILSCALE_AUTH_KEY` | Auth Key aus Tailscale |
+| `COOLIFY_TOKEN`      | API Token aus Coolify  |
+
+**4. Workflow anpassen**
+
+In `.github/workflows/deploy.yml` die Coolify API URL und UUID anpassen:
+
+- URL: `http://<tailscale-hostname>/api/v1/deploy?uuid=<application-uuid>&force=false`
+- Die UUID findest du in Coolify → Application → Webhooks
+
+#### Wie es funktioniert
+
+1. Push auf `main` triggert den Workflow
+2. GitHub Actions Runner joined via `TAILSCALE_AUTH_KEY` das Tailscale-Netzwerk
+3. `curl` ruft die Coolify API über die interne Tailscale-Domain auf
+4. Coolify startet einen neuen Build und Deploy
