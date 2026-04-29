@@ -101,11 +101,14 @@ export default defineEventHandler(async (event) => {
     // Step 3: Prepare form data (use field names matching the form's name attribute)
     // IMPORTANT: use raw, untrimmed values — Mosparo's frontend captures the
     // values verbatim from the inputs, so the hashes must match exactly.
+    // Include the honeypot `website` field too: Mosparo tracks it regardless
+    // of `data-mosparo-ignore-field`, so we must hash & verify it as well.
     const rawFormData: Record<string, string> = {
       name: rawName,
       email: rawEmail,
       subject: rawSubject,
       message: rawMessage,
+      website: body?.website || "",
     };
     // Replace CRLF with LF (per mosparo spec)
     const preparedFormData: Record<string, string> = {};
