@@ -3,7 +3,8 @@
     <header class="contact-header">
       <h1 class="page-title">Kontakt</h1>
       <p class="lead">
-        Du meinst, dass wir gut zusammenarbeiten könnten? Dann schreibe mir einfach und lass uns darüber sprechen.
+        Du meinst, dass wir gut zusammenarbeiten könnten? Dann schreibe mir
+        einfach und lass uns darüber sprechen.
       </p>
     </header>
 
