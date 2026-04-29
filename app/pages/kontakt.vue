@@ -30,10 +30,8 @@
       </div>
 
       <div class="row">
-        <div class="field">
-          <label for="name">
-            Name <span class="req" aria-hidden="true">*</span>
-          </label>
+        <fieldset class="field">
+          <legend>Name <span class="req" aria-hidden="true">*</span></legend>
           <input
             id="name"
             v-model="form.name"
@@ -44,12 +42,10 @@
             aria-required="true"
             :disabled="status === 'sending'"
           />
-        </div>
+        </fieldset>
 
-        <div class="field">
-          <label for="email">
-            E-Mail <span class="req" aria-hidden="true">*</span>
-          </label>
+        <fieldset class="field">
+          <legend>E-Mail <span class="req" aria-hidden="true">*</span></legend>
           <input
             id="email"
             v-model="form.email"
@@ -60,13 +56,11 @@
             aria-required="true"
             :disabled="status === 'sending'"
           />
-        </div>
+        </fieldset>
       </div>
 
-      <div class="field">
-        <label for="subject">
-          Betreff <span class="req" aria-hidden="true">*</span>
-        </label>
+      <fieldset class="field">
+        <legend>Betreff <span class="req" aria-hidden="true">*</span></legend>
         <input
           id="subject"
           v-model="form.subject"
@@ -76,12 +70,10 @@
           aria-required="true"
           :disabled="status === 'sending'"
         />
-      </div>
+      </fieldset>
 
-      <div class="field">
-        <label for="message">
-          Nachricht <span class="req" aria-hidden="true">*</span>
-        </label>
+      <fieldset class="field">
+        <legend>Nachricht <span class="req" aria-hidden="true">*</span></legend>
         <textarea
           id="message"
           v-model="form.message"
@@ -91,7 +83,7 @@
           aria-required="true"
           :disabled="status === 'sending'"
         />
-      </div>
+      </fieldset>
 
       <p class="required-hint">
         <span class="req" aria-hidden="true">*</span> Pflichtfeld
@@ -341,15 +333,24 @@ const onSubmit = async () => {
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0;
+  position: relative;
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  transition: border-color 0.25s ease;
 }
 
-.field label {
+.field legend {
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+  padding: 0 0.5rem;
+  margin-left: 0.5rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.25rem;
+  padding-top: 0.25rem;
 }
 
 .req {
@@ -358,7 +359,7 @@ const onSubmit = async () => {
 }
 
 .required-hint {
-  margin: -0.5rem 0 0;
+  margin: 0.5rem 0 0;
   font-size: 0.75rem;
   color: var(--color-text-muted);
 }
@@ -366,10 +367,9 @@ const onSubmit = async () => {
 .field input,
 .field textarea {
   width: 100%;
-  padding: 0.75rem 0;
+  padding: 0.75rem;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--color-border);
   font-family: inherit;
   font-size: 1rem;
   color: var(--color-text);
@@ -382,10 +382,13 @@ const onSubmit = async () => {
   min-height: 8rem;
 }
 
+.field:focus-within {
+  border-color: var(--color-technobotanica);
+}
+
 .field input:focus,
 .field textarea:focus {
   outline: none;
-  border-bottom-color: var(--color-technobotanica);
 }
 
 .field input:disabled,
