@@ -15,11 +15,38 @@ export default defineNuxtConfig({
       preload: ["typescript", "vue", "javascript"],
     },
   },
+  routeRules: {
+    "/**": {
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet, noimageindex",
+      },
+    },
+  },
   app: {
     pageTransition: { name: "page", mode: "out-in" },
     layoutTransition: { name: "page", mode: "out-in" },
     head: {
       link: [{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
+      meta: [
+        // Block search engines and AI crawlers from indexing or training
+        {
+          name: "robots",
+          content: "noindex, nofollow, noarchive, nosnippet, noimageindex",
+        },
+        {
+          name: "googlebot",
+          content: "noindex, nofollow, noarchive, nosnippet, noimageindex",
+        },
+        { name: "bingbot", content: "noindex, nofollow" },
+        // AI/LLM training opt-out
+        { name: "GPTBot", content: "noindex, nofollow" },
+        { name: "ChatGPT-User", content: "noindex, nofollow" },
+        { name: "Google-Extended", content: "noindex, nofollow" },
+        { name: "anthropic-ai", content: "noindex, nofollow" },
+        { name: "ClaudeBot", content: "noindex, nofollow" },
+        { name: "CCBot", content: "noindex, nofollow" },
+        { name: "PerplexityBot", content: "noindex, nofollow" },
+      ],
     },
   },
   runtimeConfig: {

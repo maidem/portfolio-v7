@@ -60,20 +60,27 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // privateKey is used for HMAC signatures, publicKey for Basic Auth
-    // We accept either MOSPARO_PRIVATE_KEY or MOSPARO_API_SECRET as the private key,
-    // and either MOSPARO_PUBLIC_KEY or MOSPARO_API_KEY as the public key (backwards compat)
+    // privateKey is used for HMAC signatures, publicKey for Basic Auth.
+    // Fallback to process.env directly because Coolify env vars marked
+    // "Available at Runtime" only are NOT baked into runtimeConfig at build time
+    // (Nuxt only overrides at runtime via NUXT_* prefix convention).
     const privateKey =
       (config.mosparoPrivateKey as string) ||
-      (config.mosparoApiSecret as string);
+      (config.mosparoApiSecret as string) ||
+      process.env.MOSPARO_PRIVATE_KEY ||
+      process.env.MOSPARO_API_SECRET ||
+      "";
     const publicKey =
       (config.public.mosparoPublicKey as string) ||
-      (config.mosparoApiKey as string);
+      (config.mosparoApiKey as string) ||
+      process.env.MOSPARO_PUBLIC_KEY ||
+      process.env.MOSPARO_API_KEY ||
+      "";
 
     if (!privateKey || !publicKey) {
       throw createError({
         statusCode: 500,
-        statusMessage: "Mosparo ist nicht korrekt konfiguriert.",
+        statusMessage: `Mosparo ist nicht korrekt konfiguriert. (privateKey: ${privateKey ? "ok" : "fehlt"}, publicKey: ${publicKey ? "ok" : "fehlt"})`,
       });
     }
 
