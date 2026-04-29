@@ -24,10 +24,18 @@ export default defineEventHandler(async (event) => {
     return { ok: true };
   }
 
-  const name = (body?.name || "").trim();
-  const email = (body?.email || "").trim();
-  const subject = (body?.subject || "").trim();
-  const message = (body?.message || "").trim();
+  // Keep raw values too — Mosparo hashes EXACTLY what its widget captured
+  // (no trim). If we trim before hashing, the server-side hash will not
+  // match and verification will fail on those fields.
+  const rawName = body?.name || "";
+  const rawEmail = body?.email || "";
+  const rawSubject = body?.subject || "";
+  const rawMessage = body?.message || "";
+
+  const name = rawName.trim();
+  const email = rawEmail.trim();
+  const subject = rawSubject.trim();
+  const message = rawMessage.trim();
 
   if (!name || name.length > 200) {
     throw createError({ statusCode: 400, statusMessage: "Ungültiger Name." });
@@ -36,6 +44,12 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 400,
       statusMessage: "Ungültige E-Mail-Adresse.",
+    });
+  }
+  if (!subject || subject.length > 200) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Bitte geben Sie einen Betreff an.",
     });
   }
   if (!message || message.length < 5 || message.length > 5000) {
@@ -85,13 +99,15 @@ export default defineEventHandler(async (event) => {
     }
 
     // Step 3: Prepare form data (use field names matching the form's name attribute)
+    // IMPORTANT: use raw, untrimmed values — Mosparo's frontend captures the
+    // values verbatim from the inputs, so the hashes must match exactly.
     const rawFormData: Record<string, string> = {
-      name,
-      email,
-      subject,
-      message,
+      name: rawName,
+      email: rawEmail,
+      subject: rawSubject,
+      message: rawMessage,
     };
-    // Replace CRLF with LF
+    // Replace CRLF with LF (per mosparo spec)
     const preparedFormData: Record<string, string> = {};
     for (const [k, v] of Object.entries(rawFormData)) {
       preparedFormData[k] = v.replace(/\r\n/g, "\n");

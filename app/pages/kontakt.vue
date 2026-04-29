@@ -24,14 +24,16 @@
             name="website"
             tabindex="-1"
             autocomplete="off"
-            data-mosparo-ignore
+            data-mosparo-ignore-field
           />
         </label>
       </div>
 
       <div class="row">
         <div class="field">
-          <label for="name">Name</label>
+          <label for="name">
+            Name <span class="req" aria-hidden="true">*</span>
+          </label>
           <input
             id="name"
             v-model="form.name"
@@ -39,12 +41,15 @@
             name="name"
             autocomplete="name"
             required
+            aria-required="true"
             :disabled="status === 'sending'"
           />
         </div>
 
         <div class="field">
-          <label for="email">E-Mail</label>
+          <label for="email">
+            E-Mail <span class="req" aria-hidden="true">*</span>
+          </label>
           <input
             id="email"
             v-model="form.email"
@@ -52,33 +57,45 @@
             name="email"
             autocomplete="email"
             required
+            aria-required="true"
             :disabled="status === 'sending'"
           />
         </div>
       </div>
 
       <div class="field">
-        <label for="subject">Betreff</label>
+        <label for="subject">
+          Betreff <span class="req" aria-hidden="true">*</span>
+        </label>
         <input
           id="subject"
           v-model="form.subject"
           type="text"
           name="subject"
+          required
+          aria-required="true"
           :disabled="status === 'sending'"
         />
       </div>
 
       <div class="field">
-        <label for="message">Nachricht</label>
+        <label for="message">
+          Nachricht <span class="req" aria-hidden="true">*</span>
+        </label>
         <textarea
           id="message"
           v-model="form.message"
           rows="6"
           name="message"
           required
+          aria-required="true"
           :disabled="status === 'sending'"
         />
       </div>
+
+      <p class="required-hint">
+        <span class="req" aria-hidden="true">*</span> Pflichtfeld
+      </p>
 
       <!-- Mosparo anti-spam widget (client-side only, requires MOSPARO_URL env) -->
       <div v-if="mosparoEnabled" class="mosparo-wrapper">
@@ -91,7 +108,7 @@
           <input
             v-model="privacyAccepted"
             type="checkbox"
-            data-mosparo-ignore
+            data-mosparo-ignore-field
             :disabled="status === 'sending'"
           />
           <span>
@@ -332,6 +349,17 @@ const onSubmit = async () => {
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.req {
+  color: var(--color-technobotanica, #c0392b);
+  margin-left: 0.15em;
+}
+
+.required-hint {
+  margin: -0.5rem 0 0;
+  font-size: 0.75rem;
   color: var(--color-text-muted);
 }
 
