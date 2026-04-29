@@ -103,63 +103,70 @@ const skillGroups: SkillGroup[] = [
 .skill-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
-  padding: 1.75rem 0;
+  gap: 1.5rem;
+  padding: 2rem 0;
   border-bottom: 1px solid var(--color-border);
   align-items: start;
 }
 
 .skill-category {
-  padding-top: 0;
+  display: flex;
+  align-items: center;
 }
 
 .skill-items {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.625rem;
 }
 
-/* Pill base */
+/* Clean tag styling – no pills */
 .pill {
   display: inline-flex;
   align-items: center;
   font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 0.5rem 0.95rem;
-  border-radius: 999px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0;
   line-height: 1;
   white-space: nowrap;
 }
 
 .pill-dark {
-  background: var(--color-text);
-  color: var(--color-bg);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid var(--color-text);
 }
 
 .pill-muted {
   background: var(--color-surface);
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease;
+  transition: all 0.2s ease;
+  cursor: default;
 }
 
 .pill-muted:hover {
   color: var(--color-text);
-  border-color: var(--color-text-muted);
+  background: var(--color-bg);
+  border-color: var(--color-text);
 }
 
 @media (min-width: 640px) {
   .skill-row {
-    grid-template-columns: 12rem 1fr;
-    gap: 2.5rem;
-    padding: 2rem 0;
+    grid-template-columns: 140px 1fr;
+    gap: 3rem;
+    padding: 2.25rem 0;
   }
+
   .skill-category {
-    padding-top: 0.25rem;
+    padding-top: 0.125rem;
   }
 }
 </style>
