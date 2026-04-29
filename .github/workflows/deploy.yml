@@ -1,0 +1,38 @@
+name: Deploy to Coolify
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Trigger Coolify Redeploy
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            # Finde den Portfolio Container und starte ihn neu
+            CONTAINER=$(docker ps --filter "name=hri8r1ebcsc1zff5vy56ve20" --format "{{.ID}}" | head -1)
+            if [ -n "$CONTAINER" ]; then
+              docker restart $CONTAINER
+              echo "Container restarted: $CONTAINER"
+            else
+              echo "Portfolio container not found"
+              exit 1
+            fi
+          EOF
+
+      - name: Cleanup
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
