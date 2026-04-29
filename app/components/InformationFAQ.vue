@@ -14,13 +14,43 @@
         >
           <span class="question-text">{{ item.question }}</span>
           <span class="icon" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path
-                d="M3 5.5L7 9.5L11 5.5"
+            <!-- Plus when closed -->
+            <svg
+              v-if="!openItems.has(index)"
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+            >
+              <line
+                x1="7"
+                y1="2"
+                x2="7"
+                y2="12"
                 stroke="currentColor"
                 stroke-width="1.5"
                 stroke-linecap="round"
-                stroke-linejoin="round"
+              />
+              <line
+                x1="2"
+                y1="7"
+                x2="12"
+                y2="7"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <!-- Minus when open -->
+            <svg v-else width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <line
+                x1="2"
+                y1="7"
+                x2="12"
+                y2="7"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
               />
             </svg>
           </span>
@@ -123,11 +153,10 @@ const toggleItem = (index: number) => {
   justify-content: center;
   flex-shrink: 0;
   color: var(--color-text-muted);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: color 0.2s ease;
 }
 
 .faq-item.is-open .icon {
-  transform: rotate(180deg);
   color: var(--color-text);
 }
 
