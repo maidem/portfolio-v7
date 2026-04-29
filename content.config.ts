@@ -41,6 +41,14 @@ export default defineContentConfig({
             }),
           )
           .optional(),
+        skillGroups: z
+          .array(
+            z.object({
+              category: z.string(),
+              items: z.array(z.string()),
+            }),
+          )
+          .optional(),
       }),
     }),
   },

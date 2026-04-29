@@ -3,8 +3,7 @@
     <header class="contact-header">
       <h1 class="page-title">Kontakt</h1>
       <p class="lead">
-        Sie haben ein Projekt im Kopf oder möchten zusammenarbeiten? Schreiben
-        Sie mir — ich melde mich zeitnah zurück.
+        Du meinst, dass wir gut zusammenarbeiten könnten? Dann schreibe mir einfach und lass uns darüber sprechen.
       </p>
     </header>
 

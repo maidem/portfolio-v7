@@ -27,6 +27,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+
 definePageMeta({ layout: "default" });
 useHead({ title: "Skills – Maik Demuth" });
 
@@ -35,45 +37,13 @@ interface SkillGroup {
   items: string[];
 }
 
-const skillGroups: SkillGroup[] = [
-  {
-    category: "CMS",
-    items: ["TYPO3", "Storyblok", "Nuxt Content", "WordPress", "Strapi"],
-  },
-  {
-    category: "Frontend",
-    items: [
-      "Vue 3",
-      "Nuxt 4",
-      "TypeScript",
-      "JavaScript",
-      "HTML5",
-      "CSS3",
-      "Tailwind CSS",
-      "Pinia",
-    ],
-  },
-  {
-    category: "Backend",
-    items: ["Node.js", "Nitro", "PHP", "REST APIs", "GraphQL"],
-  },
-  {
-    category: "Datenbanken",
-    items: ["PostgreSQL", "MySQL", "SQLite", "Redis"],
-  },
-  {
-    category: "DevOps",
-    items: ["Docker", "Coolify", "GitHub Actions", "Nginx", "Linux"],
-  },
-  {
-    category: "Tools",
-    items: ["Git", "VS Code", "Figma", "pnpm", "Vite"],
-  },
-  {
-    category: "Sprachen",
-    items: ["Deutsch", "Englisch"],
-  },
-];
+const { data: doc } = await useAsyncData("skills", () =>
+  queryCollection("pages").path("/skills").first(),
+);
+
+const skillGroups = computed(
+  () => (doc.value?.skillGroups || []) as SkillGroup[],
+);
 </script>
 
 <style scoped>

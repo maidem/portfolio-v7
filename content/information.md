@@ -13,12 +13,6 @@ faqItems:
 
   - question: Nemo enim ipsam voluptatem?
     answer: Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet.
-
-  - question: Quis autem vel eum iure reprehenderit?
-    answer: Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.
-
-  - question: At vero eos et accusamus?
-    answer: At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
 ---
 
 # Über mich
@@ -27,15 +21,11 @@ Ich bin **Maik** und seit 2009 dreht sich bei mir alles um CMS-Lösungen. Meine 
 
 ## Der Anfang: TYPO3 4.2
 
-Ohne Vorerfahrung bin ich 2009 direkt mit **TYPO3 4.2** und sieben Sprachen für das Projekt [papui.org](https://papui.org) von terre des hommes eingestiegen. Es war anfangs eher ein sportlicher Ringkampf mit dem System — aber je tiefer ich eintauchte, desto mehr habe ich die wahre Power dahinter schätzen gelernt.
+Ohne Vorerfahrung bin ich 2009 direkt mit **TYPO3 4.2** und acht Sprachen für das Projekt <a href="https://peace-manual.org/" target="_blank">peace-manual.org</a> von terre des hommes eingestiegen. Es war anfangs eher ein sportlicher Ringkampf mit dem System — aber je tiefer ich eintauchte, desto mehr habe ich die wahre Power dahinter schätzen gelernt.
 
 ## Mein Learning: Technik folgt dem Ziel
 
-Nach etlichen Kampagnen für terre des hommes und viele weitere Unternehmen ist mein wichtigstes Learning entstanden:
-
-> **Die Technik muss zum Ziel passen, nicht umgekehrt.**
-
-Dieser Grundsatz hat mich geprägt und bestimmt bis heute meine Entscheidungen.
+**Die Technik muss zum Ziel passen, nicht umgekehrt.** Ich setze auf Eleganz durch Einfachheit: Der Redakteur arbeitet intuitiv im Backend, der Besucher erlebt eine saubere Seite.
 
 ## Heute: Über den Tellerrand
 
@@ -43,3 +33,4 @@ Deshalb schaue ich heute immer über den Tellerrand und wähle das Tool, das fü
 
 - **TYPO3** — Für komplexe Enterprise-Projekte
 - **Storyblok** — Für moderne, flexible Headless-Lösungen
+- **Shopware** — Für E-Commerce-Lösungen

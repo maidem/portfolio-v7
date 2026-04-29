@@ -1,11 +1,10 @@
 <template>
   <div class="pdf-page">
     <header class="pdf-header">
-      <h1 class="page-title">PDF-Export</h1>
+      <h1 class="page-title">Portfolio-PDF erstellen</h1>
       <p class="lead">
-        Stellen Sie sich ein eigenes Profil-PDF zusammen. Wählen Sie die
-        Inhalte, die Sie erhalten möchten — eine schlichte, druckoptimierte
-        Übersicht wird daraus erzeugt.
+        Wähle alle relevanten Abschnitte aus, die für eine kompakte
+        PDF-Übersicht exportiert werden sollen
       </p>
     </header>
 
@@ -95,7 +94,7 @@
 import { computed, ref } from "vue";
 
 definePageMeta({ layout: "default" });
-useHead({ title: "PDF-Export – Maik Demuth" });
+useHead({ title: "Portfolio-PDF erstellen – Maik Demuth" });
 
 interface Option {
   id: string;
