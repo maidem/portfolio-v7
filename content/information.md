@@ -21,33 +21,25 @@ faqItems:
     answer: At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
 ---
 
-# Lorem Ipsum Dolor
+# Über mich
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+Ich bin **Maik** und seit 2009 dreht sich bei mir alles um CMS-Lösungen. Meine Leidenschaft für Content-Management-Systeme begann direkt mit einer Herausforderung: Mein Start war ein echter Sprung ins kalte Wasser.
 
-## Sed Do Eiusmod
+## Der Anfang: TYPO3 4.2
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
-eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-sunt in culpa qui officia deserunt mollit anim id est laborum.
+Ohne Vorerfahrung bin ich 2009 direkt mit **TYPO3 4.2** und sieben Sprachen für das Projekt [papui.org](https://papui.org) von terre des hommes eingestiegen. Es war anfangs eher ein sportlicher Ringkampf mit dem System — aber je tiefer ich eintauchte, desto mehr habe ich die wahre Power dahinter schätzen gelernt.
 
-## Ut Enim Ad Minim
+## Mein Learning: Technik folgt dem Ziel
 
-**Lorem ipsum** — dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.
+Nach etlichen Kampagnen für terre des hommes und viele weitere Unternehmen ist mein wichtigstes Learning entstanden:
 
-**Sed do eiusmod** — tempor incididunt ut labore et dolore magna aliqua enim minim.
+> **Die Technik muss zum Ziel passen, nicht umgekehrt.**
 
-**Duis aute irure** — dolor in reprehenderit voluptate velit esse cillum dolore.
+Dieser Grundsatz hat mich geprägt und bestimmt bis heute meine Entscheidungen.
 
-**Excepteur sint** — occaecat cupidatat non proident sunt in culpa qui officia.
+## Heute: Über den Tellerrand
 
-## Quis Nostrud
+Deshalb schaue ich heute immer über den Tellerrand und wähle das Tool, das für die jeweilige Anforderung wirklich Sinn ergibt. Meistens machen dabei folgende Lösungen das Rennen:
 
-- Lorem ipsum dolor sit amet
-- Consectetur adipiscing elit
-- Sed do eiusmod tempor incididunt
-- Ut labore et dolore magna aliqua
-- Ut enim ad minim veniam
-- Quis nostrud exercitation ullamco
+- **TYPO3** — Für komplexe Enterprise-Projekte
+- **Storyblok** — Für moderne, flexible Headless-Lösungen

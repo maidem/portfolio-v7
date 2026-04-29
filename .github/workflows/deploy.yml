@@ -18,5 +18,5 @@ jobs:
       - name: Trigger Coolify Deploy via API
         run: |
           curl --fail -X GET \
-            "http://coolify-ubuntu-4gb-nbg1-1.tail252f40.ts.net/api/v1/deploy?uuid=hri8r1ebcsc1zff5vy56ve20&force=false" \
+            "http://coolify-ubuntu-4gb-nbg1-1.tail252f40.ts.net/api/v1/deploy?uuid=hri8r1ebcsc1zff5vy56ve20&force=true" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
