@@ -1,7 +1,7 @@
 <template>
   <div class="pdf-page">
     <header class="pdf-header">
-      <h1 class="page-title">Portfolio-PDF erstellen</h1>
+      <h1 class="page-title">Pdf-Export</h1>
       <p class="lead">
         Wähle alle relevanten Abschnitte aus, die für eine kompakte
         PDF-Übersicht exportiert werden sollen
@@ -199,7 +199,6 @@ const exportPdf = async () => {
 .options {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--color-border);
 }
 
 .option {
@@ -207,9 +206,12 @@ const exportPdf = async () => {
   align-items: flex-start;
   gap: 1rem;
   padding: 1.1rem 0;
-  border-bottom: 1px solid var(--color-border);
   cursor: pointer;
   transition: opacity 0.2s ease;
+}
+
+.option + .option {
+  border-top: 1px solid var(--color-border);
 }
 
 .option:hover {

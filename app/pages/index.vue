@@ -5,7 +5,6 @@
     </div>
     <section class="faq-block">
       <header class="faq-header">
-        <span class="faq-eyebrow">FAQ</span>
         <h2 class="faq-title">Häufige Fragen</h2>
       </header>
       <InformationFAQ :items="doc.faqItems" />
