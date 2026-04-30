@@ -140,6 +140,10 @@
       </Transition>
     </header>
 
+    <div class="hero-banner" aria-hidden="true">
+      <span class="hero-text">PORTFOLIO</span>
+    </div>
+
     <main class="main-content">
       <slot />
     </main>
@@ -392,8 +396,9 @@ const toggleTheme = () => {
 }
 
 .nav-mobile {
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
   background: var(--color-bg);
   max-height: calc(100dvh - var(--nav-height));
   overflow-y: auto;
@@ -402,17 +407,81 @@ const toggleTheme = () => {
   list-style: none;
   margin: 0;
   padding: 0;
-  max-width: var(--max-width);
-  margin-inline: auto;
+  width: 100%;
 }
-.mobile-item + .mobile-item {
-  border-top: 1px solid var(--color-border);
+.mobile-item {
+  position: relative;
+}
+/* Side-building separator lines (animate on mount) */
+@keyframes line-build {
+  from {
+    transform: translateX(-50%) scaleX(0);
+  }
+  to {
+    transform: translateX(-50%) scaleX(1);
+  }
+}
+.mobile-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100%;
+  height: 1px;
+  background: var(--color-border);
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  animation: line-build 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.mobile-item:last-child::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  height: 1px;
+  background: var(--color-border);
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  animation: line-build 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.mobile-item:nth-child(1)::before {
+  animation-delay: 0.05s;
+}
+.mobile-item:nth-child(2)::before {
+  animation-delay: 0.1s;
+}
+.mobile-item:nth-child(3)::before {
+  animation-delay: 0.15s;
+}
+.mobile-item:nth-child(4)::before {
+  animation-delay: 0.2s;
+}
+.mobile-item:nth-child(5)::before {
+  animation-delay: 0.25s;
+}
+.mobile-item:nth-child(6)::before {
+  animation-delay: 0.3s;
+}
+.mobile-item:nth-child(7)::before {
+  animation-delay: 0.35s;
+}
+.mobile-item:last-child::after {
+  animation-delay: 0.4s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-item::before,
+  .mobile-item:last-child::after {
+    animation: none;
+    transform: translateX(-50%) scaleX(1);
+  }
 }
 .mobile-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-4);
+  width: 100%;
 }
 .mobile-link {
   flex: 1;
@@ -424,6 +493,16 @@ const toggleTheme = () => {
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 0.15em;
+  text-underline-offset: 0.25em;
+  text-decoration-skip-ink: none;
+  transition: text-decoration-color 0.25s ease;
+}
+.mobile-link:hover,
+.mobile-link.router-link-active {
+  text-decoration-color: var(--color-technobotanica);
 }
 .expand-btn {
   width: 36px;
@@ -543,10 +622,40 @@ const toggleTheme = () => {
 .main-content {
   flex: 1;
   position: relative;
+  z-index: 1;
   max-width: var(--max-width);
   width: 100%;
   margin-inline: auto;
   padding: var(--space-8) var(--space-4);
+}
+
+/* Hero Banner — Outline Portfolio Schriftzug fixed in background */
+.hero-banner {
+  position: fixed;
+  top: var(--nav-height, 64px);
+  left: 0;
+  right: 0;
+  width: 100vw;
+  padding: var(--space-6) 0 0;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-text {
+  display: block;
+  width: 100%;
+  font-family: "Poppins", "JetBrains Mono", sans-serif;
+  font-weight: 900;
+  font-size: clamp(4rem, 19vw, 22rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  text-align: center;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--color-border);
+  text-stroke: 1px var(--color-border);
+  white-space: nowrap;
+  opacity: 0.65;
 }
 .footer {
   display: flex;

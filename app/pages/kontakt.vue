@@ -349,11 +349,9 @@ const onSubmit = async () => {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+  background: var(--color-bg);
   padding: 0 0.5rem;
   margin-left: 0.5rem;
-  margin-top: -0.5rem;
-  margin-bottom: 0.25rem;
-  padding-top: 0.25rem;
 }
 
 .req {

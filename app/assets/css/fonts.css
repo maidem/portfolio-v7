@@ -32,6 +32,15 @@
   font-display: swap;
 }
 
+/* Poppins Black 900 - DSGVO compliant local font (only for hero title) */
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Global Font Application */
 html {
   font-family: "JetBrains Mono", "Courier New", monospace;

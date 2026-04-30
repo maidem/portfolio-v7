@@ -12,6 +12,9 @@
           :aria-expanded="openItems.has(index)"
           @click="toggleItem(index)"
         >
+          <span class="q-index" aria-hidden="true">{{
+            String(index + 1).padStart(2, "0")
+          }}</span>
           <span class="question-text">{{ item.question }}</span>
           <span class="icon" aria-hidden="true">
             <!-- Plus when closed -->
@@ -55,9 +58,16 @@
             </svg>
           </span>
         </button>
-        <Transition name="faq-slide">
-          <div v-if="openItems.has(index)" class="faq-answer">
-            <p>{{ item.answer }}</p>
+        <Transition
+          name="faq-slide"
+          @enter="onEnter"
+          @after-enter="onAfterEnter"
+          @leave="onLeave"
+        >
+          <div v-if="openItems.has(index)" class="faq-answer-wrapper">
+            <div class="faq-answer">
+              <p>{{ item.answer }}</p>
+            </div>
           </div>
         </Transition>
       </div>
@@ -93,6 +103,33 @@ const toggleItem = (index: number) => {
   // Trigger reactivity
   openItems.value = new Set(openItems.value);
 };
+
+// Smooth height animation hooks
+const onEnter = (el: Element) => {
+  const element = el as HTMLElement;
+  element.style.height = "0";
+  element.style.opacity = "0";
+  // Force reflow
+  void element.offsetHeight;
+  element.style.height = `${element.scrollHeight}px`;
+  element.style.opacity = "1";
+};
+
+const onAfterEnter = (el: Element) => {
+  const element = el as HTMLElement;
+  element.style.height = "";
+  element.style.opacity = "";
+};
+
+const onLeave = (el: Element) => {
+  const element = el as HTMLElement;
+  element.style.height = `${element.scrollHeight}px`;
+  element.style.opacity = "1";
+  // Force reflow
+  void element.offsetHeight;
+  element.style.height = "0";
+  element.style.opacity = "0";
+};
 </script>
 
 <style scoped>
@@ -110,20 +147,21 @@ const toggleItem = (index: number) => {
 .faq-list {
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
 }
 
 .faq-item {
-  border-top: 1px solid var(--color-border);
+  border: none;
 }
 
-.faq-item:last-child {
-  border-bottom: 1px solid var(--color-border);
+.faq-item + .faq-item {
+  margin-top: 0.25rem;
 }
 
 .faq-question {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
   gap: 1.5rem;
   padding: 1.25rem 0;
   cursor: pointer;
@@ -131,12 +169,27 @@ const toggleItem = (index: number) => {
   border: none;
   background: none;
   color: var(--color-text);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
   line-height: 1.4;
   transition: color 0.2s ease;
   width: 100%;
   text-align: left;
+}
+
+.q-index {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  min-width: 1.75rem;
+  transition: color 0.2s ease;
+}
+
+.faq-item.is-open .q-index {
+  color: var(--color-technobotanica);
 }
 
 .faq-question:hover {
@@ -160,42 +213,30 @@ const toggleItem = (index: number) => {
   color: var(--color-text);
 }
 
-.faq-answer {
-  padding: 0 0 1.25rem;
-  color: var(--color-text-muted);
+.faq-answer-wrapper {
   overflow: hidden;
+}
+
+.faq-answer {
+  padding: 0 0 1.5rem calc(1.75rem + 1.5rem);
+  color: var(--color-text-muted);
 }
 
 .faq-answer p {
   margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.7;
+  font-size: 0.95rem;
+  line-height: 1.75;
   color: var(--color-text-muted);
+  max-width: 65ch;
 }
 
-/* Smooth Transitions - GPU accelerated with bounce */
-.faq-slide-enter-active {
-  transition:
-    opacity 0.35s ease,
-    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
+/* Smooth height transitions via JS hooks */
+.faq-slide-enter-active,
 .faq-slide-leave-active {
   transition:
-    opacity 0.4s ease,
-    max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.faq-slide-enter-from {
-  opacity: 0;
-  transform: translateY(-12px);
-}
-
-.faq-slide-leave-to {
-  opacity: 0;
-  max-height: 0;
-  transform: translateY(-12px);
+    height 0.35s cubic-bezier(0.33, 1, 0.68, 1),
+    opacity 0.3s ease;
+  overflow: hidden;
 }
 
 .faq-answer {

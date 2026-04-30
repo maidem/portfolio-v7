@@ -27,6 +27,26 @@
       <section class="entry-body">
         <ContentRenderer :value="doc" />
       </section>
+
+      <nav v-if="prev || next" class="entry-nav">
+        <NuxtLink
+          v-if="prev"
+          :to="`/logbuch/${prev.slug}`"
+          class="nav-card prev"
+        >
+          <span class="nav-direction">← Vorheriges</span>
+          <span class="nav-title">{{ prev.title }}</span>
+        </NuxtLink>
+        <span v-else />
+        <NuxtLink
+          v-if="next"
+          :to="`/logbuch/${next.slug}`"
+          class="nav-card next"
+        >
+          <span class="nav-direction">Nächstes →</span>
+          <span class="nav-title">{{ next.title }}</span>
+        </NuxtLink>
+      </nav>
     </article>
 
     <div v-else class="not-found">
@@ -38,6 +58,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+
 definePageMeta({ layout: "default" });
 
 const route = useRoute();
@@ -47,6 +69,26 @@ const { data: doc } = await useAsyncData(`logbuch-${route.params.slug}`, () =>
     .where("stem", "LIKE", `logbuch/${route.params.slug}`)
     .first(),
 );
+
+const { data: entries } = await useAsyncData("logbuch-list", () =>
+  queryCollection("logbuch").order("date", "DESC").all(),
+);
+
+const currentIndex = computed(
+  () =>
+    entries.value?.findIndex((p: any) => p.slug === route.params.slug) ?? -1,
+);
+
+const prev = computed(() => {
+  if (!entries.value || currentIndex.value <= 0) return null;
+  return entries.value[currentIndex.value - 1];
+});
+
+const next = computed(() => {
+  if (!entries.value || currentIndex.value >= entries.value.length - 1)
+    return null;
+  return entries.value[currentIndex.value + 1];
+});
 
 const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString("de-DE", {
@@ -173,5 +215,47 @@ useHead({
 .not-found p {
   margin: 1rem 0 2rem;
   color: var(--color-text-muted);
+}
+.entry-nav {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border);
+}
+.nav-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--color-text);
+  padding: 1rem 0;
+  transition: opacity 0.25s ease;
+}
+.nav-card.next {
+  text-align: left;
+}
+.nav-card:hover {
+  opacity: 0.7;
+}
+.nav-direction {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.nav-title {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+@media (min-width: 640px) {
+  .entry-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+  .nav-card.next {
+    text-align: right;
+  }
 }
 </style>
