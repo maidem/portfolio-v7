@@ -2,7 +2,7 @@
 title: Information
 description: Lorem ipsum dolor sit amet consectetur adipiscing elit.
 faqItems:
-  - question: Lorem ipsum dolor sit amet?
+  - question: Wie hilft dir KI dabei, deine Projekte effizienter zu machen?
     answer: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
   - question: Duis aute irure dolor in reprehenderit?
@@ -17,7 +17,7 @@ faqItems:
 
 # Über mich
 
-Ich bin **Maik** und seit 2009 dreht sich bei mir alles um CMS-Lösungen. Meine Leidenschaft für Content-Management-Systeme begann direkt mit einer Herausforderung: Mein Start war ein echter Sprung ins kalte Wasser.
+Hi ich bin **Maik** und seit 2009 dreht sich bei mir alles um CMS-Lösungen. Meine Leidenschaft für Content-Management-Systeme begann direkt mit einer Herausforderung: Mein Start war ein echter Sprung ins kalte Wasser.
 
 ## Der Anfang: TYPO3 4.2
 
