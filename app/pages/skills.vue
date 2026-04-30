@@ -9,19 +9,24 @@
     </header>
 
     <section class="skills-list">
-      <div v-for="group in skillGroups" :key="group.category" class="skill-row">
-        <div class="skill-category">
-          <span class="pill pill-dark">{{ group.category }}</span>
-        </div>
-        <div class="skill-items">
-          <span
-            v-for="skill in group.items"
-            :key="skill"
-            class="pill pill-muted"
-            >{{ skill }}</span
-          >
-        </div>
-      </div>
+      <article
+        v-for="(group, gi) in skillGroups"
+        :key="group.category"
+        class="skill-row"
+      >
+        <header class="skill-meta">
+          <span class="row-index" aria-hidden="true">{{
+            String(gi + 1).padStart(2, "0")
+          }}</span>
+          <h2 class="skill-category">{{ group.category }}</h2>
+        </header>
+        <ul class="skill-items">
+          <li v-for="skill in group.items" :key="skill" class="skill-tag">
+            <span class="dot" aria-hidden="true" />
+            <span class="tag-label">{{ skill }}</span>
+          </li>
+        </ul>
+      </article>
     </section>
   </div>
 </template>
@@ -67,76 +72,128 @@ const skillGroups = computed(
 .skills-list {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--color-border);
 }
 
 .skill-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 1.25rem;
   padding: 2rem 0;
-  border-bottom: 1px solid var(--color-border);
   align-items: start;
+  position: relative;
+  transition: background 0.3s ease;
+}
+
+.skill-row + .skill-row {
+  border-top: 1px solid var(--color-border);
+}
+
+.skill-row:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 0;
+  height: 1px;
+  background: var(--color-technobotanica);
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.skill-row:not(:first-child):hover::before {
+  width: 100%;
+}
+
+.skill-meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.row-index {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 .skill-category {
-  display: flex;
-  align-items: center;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+  line-height: 1.2;
 }
 
 .skill-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.625rem;
+  gap: 0.5rem 1.5rem;
 }
 
-/* Clean tag styling – no pills */
-.pill {
+.skill-tag {
   display: inline-flex;
   align-items: center;
-  font-size: 0.75rem;
+  gap: 0.5rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0;
-  line-height: 1;
+  color: var(--color-text);
+  line-height: 1.4;
+  transition:
+    color 0.2s ease,
+    transform 0.25s ease;
+}
+
+.skill-tag:hover {
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.skill-tag:hover .dot {
+  background: var(--color-technobotanica);
+  transform: scale(1.4);
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  flex-shrink: 0;
+  transition:
+    background 0.2s ease,
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tag-label {
   white-space: nowrap;
 }
 
-.pill-dark {
-  background: transparent;
-  color: var(--color-text);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid var(--color-text);
-}
-
-.pill-muted {
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
-  transition: all 0.2s ease;
-  cursor: default;
-}
-
-.pill-muted:hover {
-  color: var(--color-text);
-  background: var(--color-bg);
-  border-color: var(--color-text);
-}
-
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .skill-row {
-    grid-template-columns: 140px 1fr;
-    gap: 3rem;
-    padding: 2.25rem 0;
+    grid-template-columns: 240px 1fr;
+    gap: 4rem;
+    padding: 2.5rem 0;
+    align-items: first baseline;
   }
-
+  .skill-meta {
+    position: sticky;
+    top: calc(var(--nav-height, 64px) + 2rem);
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    align-items: baseline;
+    align-content: start;
+  }
   .skill-category {
-    padding-top: 0.125rem;
+    font-size: 1.4rem;
+  }
+  .skill-items {
+    /* Both columns aligned via grid 'first baseline' on .skill-row */
   }
 }
 </style>

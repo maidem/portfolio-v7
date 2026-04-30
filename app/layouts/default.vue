@@ -1,5 +1,8 @@
 <template>
-  <div class="layout" :class="{ 'is-mounted': mounted }">
+  <div
+    class="layout"
+    :class="{ 'is-mounted': mounted, 'mobile-open': mobileOpen }"
+  >
     <header class="topnav">
       <div class="topnav-inner">
         <NuxtLink to="/" class="site-name" @click="closeMobile"
@@ -84,14 +87,22 @@
       </div>
 
       <Transition name="drawer">
-        <nav v-if="mobileOpen" class="nav-mobile">
+        <nav
+          v-if="mobileOpen"
+          class="nav-mobile"
+          :class="{ 'has-expanded': expanded }"
+        >
           <ul class="mobile-list">
             <li
-              v-for="link in navLinks"
+              v-for="(link, i) in navLinks"
               :key="link.to + link.label"
               class="mobile-item"
+              :class="{ 'is-expanded': expanded === link.to }"
             >
               <div class="mobile-row">
+                <span class="mobile-index" aria-hidden="true"
+                  >[{{ String(i + 1).padStart(2, "0") }}]</span
+                >
                 <NuxtLink
                   :to="link.to"
                   class="mobile-link"
@@ -106,11 +117,41 @@
                   :aria-label="`${link.label} Untermenü`"
                   @click="toggle(link.to)"
                 >
-                  <span class="plus" aria-hidden="true" />
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    aria-hidden="true"
+                  >
+                    <line
+                      x1="4"
+                      y1="10"
+                      x2="16"
+                      y2="10"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                    <line
+                      class="plus-v"
+                      x1="10"
+                      y1="4"
+                      x2="10"
+                      y2="16"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                  </svg>
                 </button>
               </div>
 
-              <Transition name="submenu">
+              <Transition
+                name="submenu"
+                @enter="onSubEnter"
+                @after-enter="onSubAfterEnter"
+                @leave="onSubLeave"
+              >
                 <ul
                   v-if="link.expandable && expanded === link.to"
                   class="submenu"
@@ -128,7 +169,6 @@
                       class="submenu-link"
                       @click="closeMobile"
                     >
-                      <span class="dash" aria-hidden="true" />
                       <span>{{ sub.label }}</span>
                     </NuxtLink>
                   </li>
@@ -179,6 +219,12 @@ watch(
   },
 );
 
+// Lock body scroll while the fullscreen mobile nav is open
+watch(mobileOpen, (open) => {
+  if (typeof document === "undefined") return;
+  document.body.style.overflow = open ? "hidden" : "";
+});
+
 const closeMobile = () => {
   mobileOpen.value = false;
   expanded.value = null;
@@ -186,6 +232,29 @@ const closeMobile = () => {
 
 const toggle = (key: string) => {
   expanded.value = expanded.value === key ? null : key;
+};
+
+// Smooth height animation hooks (mirrors FAQ pattern)
+const onSubEnter = (el: Element) => {
+  const element = el as HTMLElement;
+  element.style.height = "0";
+  element.style.opacity = "0";
+  void element.offsetHeight;
+  element.style.height = `${element.scrollHeight}px`;
+  element.style.opacity = "1";
+};
+const onSubAfterEnter = (el: Element) => {
+  const element = el as HTMLElement;
+  element.style.height = "";
+  element.style.opacity = "";
+};
+const onSubLeave = (el: Element) => {
+  const element = el as HTMLElement;
+  element.style.height = `${element.scrollHeight}px`;
+  element.style.opacity = "1";
+  void element.offsetHeight;
+  element.style.height = "0";
+  element.style.opacity = "0";
 };
 
 interface NavLink {
@@ -269,6 +338,24 @@ const toggleTheme = () => {
   z-index: 100;
   background: var(--color-bg);
   border-bottom: none;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+.layout.mobile-open .topnav {
+  background: var(--color-technobotanica);
+  color: #0a0a0a;
+}
+.layout.mobile-open .site-name,
+.layout.mobile-open .burger span,
+.layout.mobile-open .theme-toggle {
+  color: #0a0a0a;
+}
+.layout.mobile-open .burger span {
+  background: #0a0a0a;
+}
+.layout.mobile-open .theme-toggle {
+  border-color: #0a0a0a;
 }
 .topnav-inner {
   display: flex;
@@ -395,13 +482,19 @@ const toggleTheme = () => {
   transform: translateY(-6.5px) rotate(-45deg);
 }
 
+/* ============================================================
+   Mobile fullscreen overlay nav — accent color, lines build L→R
+   ============================================================ */
 .nav-mobile {
-  position: relative;
+  position: fixed;
+  inset: var(--nav-height) 0 0 0;
   width: 100vw;
-  margin-left: calc(50% - 50vw);
-  background: var(--color-bg);
-  max-height: calc(100dvh - var(--nav-height));
+  height: calc(100dvh - var(--nav-height));
+  background: var(--color-technobotanica);
+  color: #0a0a0a;
   overflow-y: auto;
+  z-index: 99;
+  padding: 1rem 0 2rem;
 }
 .mobile-list {
   list-style: none;
@@ -412,211 +505,163 @@ const toggleTheme = () => {
 .mobile-item {
   position: relative;
 }
-/* Side-building separator lines (animate on mount) */
-@keyframes line-build {
+/* Left-to-right building separator lines (between items only) */
+@keyframes line-build-lr {
   from {
-    transform: translateX(-50%) scaleX(0);
+    transform: scaleX(0);
   }
   to {
-    transform: translateX(-50%) scaleX(1);
+    transform: scaleX(1);
   }
 }
-.mobile-item::before {
+.mobile-item + .mobile-item::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 50%;
+  left: 0;
   width: 100%;
   height: 1px;
-  background: var(--color-border);
-  transform: translateX(-50%) scaleX(0);
-  transform-origin: center;
-  animation: line-build 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  background: #0a0a0a;
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: line-build-lr 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-.mobile-item:last-child::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 100%;
-  height: 1px;
-  background: var(--color-border);
-  transform: translateX(-50%) scaleX(0);
-  transform-origin: center;
-  animation: line-build 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+.mobile-item + .mobile-item:nth-child(2)::before {
+  animation-delay: 0.06s;
 }
-.mobile-item:nth-child(1)::before {
-  animation-delay: 0.05s;
+.mobile-item + .mobile-item:nth-child(3)::before {
+  animation-delay: 0.12s;
 }
-.mobile-item:nth-child(2)::before {
-  animation-delay: 0.1s;
+.mobile-item + .mobile-item:nth-child(4)::before {
+  animation-delay: 0.18s;
 }
-.mobile-item:nth-child(3)::before {
-  animation-delay: 0.15s;
+.mobile-item + .mobile-item:nth-child(5)::before {
+  animation-delay: 0.24s;
 }
-.mobile-item:nth-child(4)::before {
-  animation-delay: 0.2s;
-}
-.mobile-item:nth-child(5)::before {
-  animation-delay: 0.25s;
-}
-.mobile-item:nth-child(6)::before {
+.mobile-item + .mobile-item:nth-child(6)::before {
   animation-delay: 0.3s;
 }
-.mobile-item:nth-child(7)::before {
-  animation-delay: 0.35s;
-}
-.mobile-item:last-child::after {
-  animation-delay: 0.4s;
+.mobile-item + .mobile-item:nth-child(7)::before {
+  animation-delay: 0.36s;
 }
 @media (prefers-reduced-motion: reduce) {
-  .mobile-item::before,
-  .mobile-item:last-child::after {
+  .mobile-item + .mobile-item::before {
     animation: none;
-    transform: translateX(-50%) scaleX(1);
+    transform: scaleX(1);
   }
 }
 .mobile-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--space-4);
-  width: 100%;
+  gap: 0.85rem;
+  padding: 0 var(--space-5, 1.5rem);
+  min-height: 4.5rem;
+}
+.mobile-index {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: #0a0a0a;
+  font-variant-numeric: tabular-nums;
+  align-self: center;
+  opacity: 0.75;
 }
 .mobile-link {
-  flex: 1;
   display: block;
-  padding: 1.1rem 0;
-  color: var(--color-text);
+  color: #0a0a0a;
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  text-transform: none;
   text-decoration: underline;
   text-decoration-color: transparent;
-  text-decoration-thickness: 0.15em;
-  text-underline-offset: 0.25em;
+  text-decoration-thickness: 0.12em;
+  text-underline-offset: 0.18em;
   text-decoration-skip-ink: none;
   transition: text-decoration-color 0.25s ease;
 }
 .mobile-link:hover,
-.mobile-link.router-link-active {
-  text-decoration-color: var(--color-technobotanica);
+.mobile-link.router-link-active,
+.mobile-item.is-expanded .mobile-link {
+  text-decoration-color: #0a0a0a;
 }
 .expand-btn {
   width: 36px;
   height: 36px;
-  border: 1px solid var(--color-border);
+  border: none;
   background: transparent;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition:
-    border-color 0.2s ease,
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  color: #0a0a0a;
   flex-shrink: 0;
 }
-.expand-btn:hover {
-  border-color: var(--color-text);
+.expand-btn .plus-v {
+  transform-origin: center;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.expand-btn.is-open {
-  transform: rotate(45deg);
-  border-color: var(--color-text);
-}
-.plus {
-  position: relative;
-  width: 12px;
-  height: 12px;
-  display: block;
-}
-.plus::before,
-.plus::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  background: var(--color-text);
-}
-.plus::before {
-  width: 12px;
-  height: 1.5px;
-}
-.plus::after {
-  width: 1.5px;
-  height: 12px;
+.expand-btn.is-open .plus-v {
+  transform: rotate(90deg);
+  opacity: 0;
 }
 .submenu {
   list-style: none;
   margin: 0;
-  padding: 0 var(--space-4) 1rem;
-}
-.submenu-item + .submenu-item {
-  border-top: 1px dashed var(--color-border);
-}
-.submenu-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 0;
-  color: var(--color-text-muted);
-  text-decoration: none;
-  font-size: 0.85rem;
-  line-height: 1.4;
-}
-.submenu-link.router-link-active,
-.submenu-link:hover {
-  color: var(--color-text);
-}
-.dash {
-  display: inline-block;
-  width: 0.75rem;
-  height: 1px;
-  background: var(--color-text-muted);
-  flex-shrink: 0;
-}
-.submenu-empty {
-  padding: 0.75rem 0;
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.drawer-enter-active {
-  transition:
-    opacity 0.2s cubic-bezier(0, 0, 0.2, 1),
-    transform 0.22s cubic-bezier(0, 0, 0.2, 1);
-  transform-origin: top;
-  will-change: opacity, transform;
-  backface-visibility: hidden;
-}
-.drawer-leave-active {
-  transition:
-    opacity 0.12s cubic-bezier(0.4, 0, 1, 1),
-    transform 0.15s cubic-bezier(0.4, 0, 1, 1);
-  transform-origin: top;
-  will-change: opacity, transform;
-  backface-visibility: hidden;
-}
-.drawer-enter-from,
-.drawer-leave-to {
-  opacity: 0;
-  transform: translateY(-6px);
+  padding: 0 var(--space-5, 1.5rem) 1.25rem
+    calc(var(--space-5, 1.5rem) + 2.4rem);
+  overflow: hidden;
 }
 .submenu-enter-active,
 .submenu-leave-active {
   transition:
-    opacity 0.2s ease,
-    max-height 0.3s ease;
+    height 0.35s cubic-bezier(0.33, 1, 0.68, 1),
+    opacity 0.3s ease;
   overflow: hidden;
-  max-height: 600px;
+}
+.submenu-item + .submenu-item {
+  margin-top: 0.1rem;
+}
+.submenu-link {
+  display: block;
+  padding: 0.4rem 0;
+  color: #0a0a0a;
+  text-decoration: none;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+.submenu-link.router-link-active,
+.submenu-link:hover {
+  opacity: 1;
+}
+.submenu-empty {
+  padding: 0.4rem 0;
+  color: #0a0a0a;
+  opacity: 0.6;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.85rem;
+}
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: opacity 0.25s ease;
+}
+.drawer-enter-from,
+.drawer-leave-to {
+  opacity: 0;
 }
 .submenu-enter-from,
 .submenu-leave-to {
   opacity: 0;
-  max-height: 0;
 }
 
 .main-content {

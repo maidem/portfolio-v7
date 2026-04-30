@@ -74,12 +74,13 @@ const formatDate = (dateString: string) =>
 .entries {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--color-border);
 }
 .entry {
   padding: 2.5rem 0;
-  border-bottom: 1px solid var(--color-border);
   max-width: 60ch;
+}
+.entry + .entry {
+  border-top: 1px solid var(--color-border);
 }
 .entry-date {
   margin: 0 0 0.75rem;

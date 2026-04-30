@@ -87,14 +87,15 @@ const projectPath = (project: any) => `/projekte/${project.slug}`;
 .projects-list {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--color-border);
 }
 .project {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.75rem;
   padding: 2.25rem 0;
-  border-bottom: 1px solid var(--color-border);
+}
+.project + .project {
+  border-top: 1px solid var(--color-border);
 }
 .project-index {
   font-size: 0.75rem;
