@@ -7,7 +7,7 @@
       <header class="faq-header">
         <h2 class="faq-title">Häufige Fragen</h2>
       </header>
-      <InformationFAQ :items="doc.faqItems" />
+      <InformationFAQ :items="faqDoc?.faqItems" />
     </section>
   </div>
 </template>
@@ -17,6 +17,10 @@ definePageMeta({ layout: "default" });
 
 const { data: doc } = await useAsyncData("information", () =>
   queryCollection("pages").path("/information").first(),
+);
+
+const { data: faqDoc } = await useAsyncData("faq", () =>
+  queryCollection("pages").path("/faq").first(),
 );
 
 useHead({

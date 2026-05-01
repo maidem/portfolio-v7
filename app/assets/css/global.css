@@ -72,13 +72,17 @@ html.dark {
   --color-text: #f2f2f2;
   --color-text-muted: #a8a8b3;
   --color-bg-wordmark: #15151a;
+  color-scheme: dark;
+}
+html:not(.dark) {
+  color-scheme: light;
 }
 
-/* Smooth transition between themes */
+/* Smooth transition between themes — only background; color
+   transitions on html cause repaint jitter on stroked text
+   like the .hero-text outline. */
 html {
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
 /* ============================================================

@@ -209,6 +209,58 @@ useHead({
   border-bottom: 1px solid var(--color-technobotanica);
   text-decoration: none;
 }
+/* Code blocks (Shiki output from @nuxt/content) */
+.entry-body :deep(pre) {
+  margin: 2rem 0 2.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.entry-body :deep(pre code) {
+  background: transparent;
+  padding: 0;
+  font-family: var(--font-mono);
+}
+.entry-body :deep(:not(pre) > code) {
+  background: var(--color-surface);
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-sm);
+  font-size: 0.9em;
+}
+/* Tables in Markdown content */
+.entry-body :deep(table) {
+  width: 100%;
+  margin: 2rem 0;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.entry-body :deep(thead th) {
+  text-align: left;
+  font-weight: 700;
+  color: var(--color-text);
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--color-border);
+  letter-spacing: 0.02em;
+}
+.entry-body :deep(tbody td) {
+  padding: 0.75rem 1rem;
+  vertical-align: top;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  line-height: 1.6;
+}
+/* Vertikale Trennlinie zwischen den Spalten */
+.entry-body :deep(thead th + th),
+.entry-body :deep(tbody td + td) {
+  border-left: 1px solid var(--color-border);
+}
+.entry-body :deep(tbody tr:last-child td) {
+  border-bottom: none;
+}
 .not-found {
   max-width: 560px;
 }

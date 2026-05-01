@@ -17,6 +17,30 @@
         </nav>
 
         <div class="nav-actions">
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="github-link"
+            aria-label="GitHub"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
+              />
+            </svg>
+          </a>
+
           <button
             class="theme-toggle"
             type="button"
@@ -449,6 +473,33 @@ const toggleTheme = () => {
   display: block;
 }
 
+/* GitHub link */
+.github-link {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  text-decoration: none;
+}
+
+.github-link:hover {
+  border-color: var(--color-text);
+}
+
+.github-link:active {
+  transform: scale(0.94);
+}
+
 /* Burger */
 .burger {
   display: inline-flex;
@@ -680,12 +731,17 @@ const toggleTheme = () => {
   top: var(--nav-height, 64px);
   left: 0;
   right: 0;
-  width: 100vw;
+  /* Kein 100vw: das würde die Scrollbar-Breite einschließen
+     und beim Theme-Wechsel zu einem horizontalen Shift führen.
+     left/right:0 reicht für volle Breite des Viewport ohne Scrollbar. */
   padding: var(--space-6) 0 0;
   overflow: hidden;
   user-select: none;
   pointer-events: none;
   z-index: 0;
+  /* Eigener Stacking-/Paint-Context, damit das Element nicht
+     gemeinsam mit dem html-Repaint neu komponiert wird. */
+  isolation: isolate;
 }
 .hero-text {
   display: block;
@@ -696,11 +752,28 @@ const toggleTheme = () => {
   line-height: 0.9;
   letter-spacing: -0.04em;
   text-align: center;
+  /* Fixe, theme-unabhängige Stroke-Farbe verhindert Repaint-Sprung
+     beim Color-Mode-Wechsel. Mid-Gray funktioniert auf hellem
+     wie dunklem Hintergrund. */
   color: transparent;
-  -webkit-text-stroke: 1px var(--color-border);
-  text-stroke: 1px var(--color-border);
+  -webkit-text-stroke: 1px #8a8a8a;
+  text-stroke: 1px #8a8a8a;
   white-space: nowrap;
-  opacity: 0.65;
+  opacity: 0.45;
+  /* Konsistentes Glyph-Rendering, damit der Schriftzug beim
+     Theme-Wechsel nicht durch wechselndes Subpixel-AA „springt". */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  font-synthesis: none;
+  /* Verhindert, dass die geerbte color-Transition vom html-Element
+     die Outline während des Theme-Wechsels reanimiert. */
+  transition: none;
+}
+@media (max-width: 639px) {
+  .hero-banner {
+    display: none;
+  }
 }
 .footer {
   display: flex;
