@@ -12,7 +12,7 @@
       <h2 class="selector-title">Inhalte auswählen</h2>
       <div class="options">
         <label
-          v-for="opt in availableOptions"
+          v-for="opt in staticOptions"
           :key="opt.id"
           class="option"
           :class="{ 'is-checked': selected.includes(opt.id) }"
@@ -40,6 +40,206 @@
             <span class="option-desc">{{ opt.description }}</span>
           </span>
         </label>
+
+        <!-- Projekte expandable -->
+        <div class="option-group">
+          <div class="option-group-header">
+            <label
+              class="option"
+              :class="{ 'is-checked': selected.includes('projekte') }"
+            >
+              <input v-model="selected" type="checkbox" value="projekte" />
+              <span class="check" aria-hidden="true">
+                <svg
+                  v-if="selected.includes('projekte')"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                >
+                  <path
+                    d="M2.5 6.5L5 9L9.5 3.5"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <span class="option-label">
+                <span class="option-title">Projekte</span>
+                <span class="option-desc">Ausgewählte Projektreferenzen.</span>
+              </span>
+            </label>
+            <button
+              type="button"
+              class="expand-btn"
+              :class="{ 'is-open': expandedGroups.includes('projekte') }"
+              :aria-expanded="expandedGroups.includes('projekte')"
+              @click="toggleGroup('projekte')"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <line
+                  x1="7"
+                  y1="2"
+                  x2="7"
+                  y2="12"
+                  class="plus-v"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <line
+                  x1="2"
+                  y1="7"
+                  x2="12"
+                  y2="7"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </div>
+          <Transition
+            name="sub"
+            @enter="onSubEnter"
+            @after-enter="onSubAfterEnter"
+            @leave="onSubLeave"
+          >
+            <div v-if="expandedGroups.includes('projekte')" class="suboptions">
+              <label
+                v-for="proj in projekteItems"
+                :key="proj.id"
+                class="option suboption"
+                :class="{ 'is-checked': selected.includes(proj.id) }"
+              >
+                <input v-model="selected" type="checkbox" :value="proj.id" />
+                <span class="check" aria-hidden="true">
+                  <svg
+                    v-if="selected.includes(proj.id)"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                  >
+                    <path
+                      d="M2.5 6.5L5 9L9.5 3.5"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span class="option-label">
+                  <span class="option-title">{{ proj.label }}</span>
+                </span>
+              </label>
+            </div>
+          </Transition>
+        </div>
+
+        <!-- Logbuch expandable -->
+        <div class="option-group">
+          <div class="option-group-header">
+            <label
+              class="option"
+              :class="{ 'is-checked': selected.includes('logbuch') }"
+            >
+              <input v-model="selected" type="checkbox" value="logbuch" />
+              <span class="check" aria-hidden="true">
+                <svg
+                  v-if="selected.includes('logbuch')"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                >
+                  <path
+                    d="M2.5 6.5L5 9L9.5 3.5"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <span class="option-label">
+                <span class="option-title">Logbuch</span>
+                <span class="option-desc"
+                  >Erfahrungen und aktuelle Notizen.</span
+                >
+              </span>
+            </label>
+            <button
+              type="button"
+              class="expand-btn"
+              :class="{ 'is-open': expandedGroups.includes('logbuch') }"
+              :aria-expanded="expandedGroups.includes('logbuch')"
+              @click="toggleGroup('logbuch')"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <line
+                  x1="7"
+                  y1="2"
+                  x2="7"
+                  y2="12"
+                  class="plus-v"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <line
+                  x1="2"
+                  y1="7"
+                  x2="12"
+                  y2="7"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </div>
+          <Transition
+            name="sub"
+            @enter="onSubEnter"
+            @after-enter="onSubAfterEnter"
+            @leave="onSubLeave"
+          >
+            <div v-if="expandedGroups.includes('logbuch')" class="suboptions">
+              <label
+                v-for="entry in logbuchItems"
+                :key="entry.id"
+                class="option suboption"
+                :class="{ 'is-checked': selected.includes(entry.id) }"
+              >
+                <input v-model="selected" type="checkbox" :value="entry.id" />
+                <span class="check" aria-hidden="true">
+                  <svg
+                    v-if="selected.includes(entry.id)"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                  >
+                    <path
+                      d="M2.5 6.5L5 9L9.5 3.5"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span class="option-label">
+                  <span class="option-title">{{ entry.label }}</span>
+                </span>
+              </label>
+            </div>
+          </Transition>
+        </div>
       </div>
 
       <div class="actions">
@@ -91,7 +291,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 definePageMeta({ layout: "default" });
 useHead({ title: "Portfolio-PDF erstellen – Maik Demuth" });
@@ -102,28 +302,84 @@ interface Option {
   description: string;
 }
 
-const availableOptions: Option[] = [
+// Static options (without expandable sub-items)
+const staticOptions: Option[] = [
   {
     id: "information",
     label: "Informationen",
     description: "Über mich, Arbeitsweise und Werte.",
   },
   {
-    id: "projekte",
-    label: "Projekte",
-    description: "Ausgewählte Projektreferenzen.",
-  },
-  {
     id: "skills",
     label: "Skills",
     description: "Technologien und Schwerpunkte.",
   },
-  {
-    id: "logbuch",
-    label: "Logbuch",
-    description: "Erfahrungen und aktuelle Notizen.",
-  },
 ];
+
+// Dynamic collections
+const { data: projekteData } = await useAsyncData("pdf-projekte", () =>
+  queryCollection("projects").order("date", "DESC").all(),
+);
+const { data: logbuchData } = await useAsyncData("pdf-logbuch", () =>
+  queryCollection("logbuch").order("date", "DESC").all(),
+);
+
+const projekteItems = computed(() =>
+  (projekteData.value || []).map((p: any) => ({
+    id: `projekte__${p.slug}`,
+    label: p.title,
+  })),
+);
+
+const logbuchItems = computed(() =>
+  (logbuchData.value || []).map((p: any) => ({
+    id: `logbuch__${p.slug}`,
+    label: p.title,
+  })),
+);
+
+const allDynamicIds = computed(() => [
+  "projekte",
+  ...projekteItems.value.map((p) => p.id),
+  "logbuch",
+  ...logbuchItems.value.map((p) => p.id),
+]);
+
+const allOptionIds = computed(() => [
+  ...staticOptions.map((o) => o.id),
+  ...allDynamicIds.value,
+]);
+
+const expandedGroups = ref<string[]>([]);
+
+const toggleGroup = (key: string) => {
+  const idx = expandedGroups.value.indexOf(key);
+  if (idx >= 0) expandedGroups.value.splice(idx, 1);
+  else expandedGroups.value.push(key);
+};
+
+// Smooth height animation
+const onSubEnter = (el: Element) => {
+  const e = el as HTMLElement;
+  e.style.height = "0";
+  e.style.opacity = "0";
+  void e.offsetHeight;
+  e.style.height = `${e.scrollHeight}px`;
+  e.style.opacity = "1";
+};
+const onSubAfterEnter = (el: Element) => {
+  const e = el as HTMLElement;
+  e.style.height = "";
+  e.style.opacity = "";
+};
+const onSubLeave = (el: Element) => {
+  const e = el as HTMLElement;
+  e.style.height = `${e.scrollHeight}px`;
+  e.style.opacity = "1";
+  void e.offsetHeight;
+  e.style.height = "0";
+  e.style.opacity = "0";
+};
 
 const selected = ref<string[]>([]);
 const printRoot = ref<HTMLElement | null>(null);
@@ -131,12 +387,44 @@ const isPreparing = ref(false);
 const printEntries = ref<{ id: string; label: string; html: string }[]>([]);
 
 const allSelected = computed(
-  () => selected.value.length === availableOptions.length,
+  () => selected.value.length === allOptionIds.value.length,
 );
 
 const toggleAll = () => {
-  selected.value = allSelected.value ? [] : availableOptions.map((o) => o.id);
+  selected.value = allSelected.value ? [] : [...allOptionIds.value];
 };
+
+// When parent "projekte" is toggled, sync all sub-items
+watch(
+  () => selected.value.includes("projekte"),
+  (checked) => {
+    const subIds = projekteItems.value.map((p) => p.id);
+    if (checked) {
+      // add all sub-items not yet selected
+      subIds.forEach((id) => {
+        if (!selected.value.includes(id)) selected.value.push(id);
+      });
+    } else {
+      // only remove sub-items if ALL were previously selected (avoid removing manual picks)
+      selected.value = selected.value.filter((id) => !subIds.includes(id));
+    }
+  },
+);
+
+// When parent "logbuch" is toggled, sync all sub-items
+watch(
+  () => selected.value.includes("logbuch"),
+  (checked) => {
+    const subIds = logbuchItems.value.map((p) => p.id);
+    if (checked) {
+      subIds.forEach((id) => {
+        if (!selected.value.includes(id)) selected.value.push(id);
+      });
+    } else {
+      selected.value = selected.value.filter((id) => !subIds.includes(id));
+    }
+  },
+);
 
 const today = computed(() =>
   new Date().toLocaleDateString("de-DE", {
@@ -211,11 +499,72 @@ const exportPdf = async () => {
 }
 
 .option + .option {
-  border-top: 1px solid var(--color-border);
 }
 
 .option:hover {
   opacity: 0.85;
+}
+
+.option-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.option-group-header {
+  display: flex;
+  align-items: center;
+}
+
+.option-group-header .option {
+  flex: 1;
+}
+
+.expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: color 0.2s ease;
+}
+
+.expand-btn:hover {
+  color: var(--color-text);
+}
+
+.expand-btn.is-open .plus-v {
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+.expand-btn .plus-v {
+  transition: transform 0.2s ease;
+}
+
+.suboptions {
+  padding-left: 2.15rem;
+  overflow: hidden;
+  transition:
+    height 0.3s cubic-bezier(0.33, 1, 0.68, 1),
+    opacity 0.25s ease;
+}
+
+.suboption {
+  padding: 0.65rem 0;
+}
+
+.sub-enter-active,
+.sub-leave-active {
+  transition:
+    height 0.3s cubic-bezier(0.33, 1, 0.68, 1),
+    opacity 0.25s ease;
+  overflow: hidden;
 }
 
 .option input {

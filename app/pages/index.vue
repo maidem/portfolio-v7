@@ -42,7 +42,6 @@ useHead({
   grid-template-columns: 1fr;
   gap: 2rem;
   padding-top: 3rem;
-  border-top: 1px solid var(--color-border);
 }
 
 .faq-header {

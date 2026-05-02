@@ -85,21 +85,13 @@ const skillGroups = computed(
 }
 
 .skill-row + .skill-row {
-  border-top: 1px solid var(--color-border);
 }
 
 .skill-row:not(:first-child)::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: -1px;
-  width: 0;
-  height: 1px;
-  background: var(--color-technobotanica);
-  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  content: none;
 }
 .skill-row:not(:first-child):hover::before {
-  width: 100%;
+  content: none;
 }
 
 .skill-meta {

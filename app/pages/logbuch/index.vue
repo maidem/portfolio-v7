@@ -80,7 +80,6 @@ const formatDate = (dateString: string) =>
   max-width: 60ch;
 }
 .entry + .entry {
-  border-top: 1px solid var(--color-border);
 }
 .entry-date {
   margin: 0 0 0.75rem;

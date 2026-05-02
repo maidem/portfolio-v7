@@ -340,6 +340,7 @@ const onSubmit = async () => {
   position: relative;
   border: 1px solid var(--color-border);
   border-radius: 0;
+  background: transparent;
   transition: border-color 0.25s ease;
 }
 
@@ -349,7 +350,7 @@ const onSubmit = async () => {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  background: var(--color-bg);
+  background: transparent;
   padding: 0 0.5rem;
   margin-left: 0.5rem;
 }

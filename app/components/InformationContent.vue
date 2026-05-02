@@ -61,7 +61,6 @@ watch(
   .info-body {
     column-count: 2;
     column-gap: 3.5rem;
-    column-rule: 1px solid var(--color-border);
   }
   .info-body :deep(:where(h2, h3, h4, h5, h6)) {
     break-after: avoid-column;

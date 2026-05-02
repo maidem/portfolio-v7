@@ -738,7 +738,7 @@ const toggleTheme = () => {
   overflow: hidden;
   user-select: none;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
   /* Eigener Stacking-/Paint-Context, damit das Element nicht
      gemeinsam mit dem html-Repaint neu komponiert wird. */
   isolation: isolate;
@@ -752,14 +752,18 @@ const toggleTheme = () => {
   line-height: 0.9;
   letter-spacing: -0.04em;
   text-align: center;
-  /* Fixe, theme-unabhängige Stroke-Farbe verhindert Repaint-Sprung
-     beim Color-Mode-Wechsel. Mid-Gray funktioniert auf hellem
-     wie dunklem Hintergrund. */
-  color: transparent;
-  -webkit-text-stroke: 1px #8a8a8a;
-  text-stroke: 1px #8a8a8a;
+  color: var(--color-bg);
+  -webkit-text-stroke: 1px rgba(100, 100, 100, 0.55);
+  text-stroke: 1px rgba(100, 100, 100, 0.55);
+  /* Layered offset shadows → 3D extrusion depth */
+  text-shadow:
+    2px 3px 0 rgba(140, 140, 140, 0.18),
+    4px 6px 0 rgba(130, 130, 130, 0.13),
+    6px 9px 0 rgba(120, 120, 120, 0.09),
+    8px 12px 0 rgba(110, 110, 110, 0.06),
+    10px 15px 0 rgba(100, 100, 100, 0.04);
   white-space: nowrap;
-  opacity: 0.45;
+  opacity: 1;
   /* Konsistentes Glyph-Rendering, damit der Schriftzug beim
      Theme-Wechsel nicht durch wechselndes Subpixel-AA „springt". */
   -webkit-font-smoothing: antialiased;
@@ -784,7 +788,6 @@ const toggleTheme = () => {
   width: 100%;
   margin-inline: auto;
   padding: var(--space-6) var(--space-4);
-  border-top: 1px solid var(--color-border);
   color: var(--color-text-muted);
   font-size: var(--text-xs);
 }

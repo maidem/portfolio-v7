@@ -95,7 +95,6 @@ const projectPath = (project: any) => `/projekte/${project.slug}`;
   padding: 2.25rem 0;
 }
 .project + .project {
-  border-top: 1px solid var(--color-border);
 }
 .project-index {
   font-size: 0.75rem;

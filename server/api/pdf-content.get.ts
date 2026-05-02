@@ -18,6 +18,11 @@ const SECTION_LABELS: Record<string, string> = {
 
 const ALLOWED = new Set(Object.keys(SECTION_LABELS));
 
+const isAllowedId = (id: string) =>
+  ALLOWED.has(id) ||
+  /^projekte__[a-z0-9-]+$/.test(id) ||
+  /^logbuch__[a-z0-9-]+$/.test(id);
+
 const renderMarkdownFile = async (path: string) => {
   const raw = await fs.readFile(path, "utf-8");
   const { content } = matter(raw);
@@ -32,13 +37,21 @@ const safeRead = async (path: string) => {
   }
 };
 
+const safeReadRaw = async (path: string): Promise<string | null> => {
+  try {
+    return await fs.readFile(path, "utf-8");
+  } catch {
+    return null;
+  }
+};
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const sectionsParam = String(query.sections || "");
   const ids = sectionsParam
     .split(",")
     .map((s) => s.trim())
-    .filter((s) => ALLOWED.has(s));
+    .filter((s) => isAllowedId(s));
 
   if (ids.length === 0) {
     throw createError({
@@ -52,6 +65,7 @@ export default defineEventHandler(async (event) => {
 
   for (const id of ids) {
     let html = "";
+    let label = SECTION_LABELS[id] || id;
 
     if (id === "information") {
       html = await safeRead(resolve(contentRoot, "information.md"));
@@ -71,7 +85,6 @@ export default defineEventHandler(async (event) => {
           const techs = Array.isArray(data.technologies)
             ? (data.technologies as string[]).join(" · ")
             : "";
-
           parts.push(`<section class="project">
             <h3>${escapeHtml(title)}</h3>
             ${date ? `<p class="meta">${escapeHtml(date)}</p>` : ""}
@@ -84,15 +97,57 @@ export default defineEventHandler(async (event) => {
       } catch {
         html = "";
       }
+    } else if (id.startsWith("projekte__")) {
+      const slug = id.slice("projekte__".length);
+      const filePath = resolve(contentRoot, "projects", `${slug}.md`);
+      const raw = await safeReadRaw(filePath);
+      if (raw) {
+        const { data, content } = matter(raw);
+        label = (data.title as string) || slug;
+        const techs = Array.isArray(data.technologies)
+          ? (data.technologies as string[]).join(" · ")
+          : "";
+        html = `${marked.parse(content) as string}
+          ${techs ? `<p class="tech"><strong>Technologien:</strong> ${escapeHtml(techs)}</p>` : ""}`;
+      }
     } else if (id === "skills") {
       html = `<p>Schwerpunkte und Technologien sind in Vorbereitung. Aktuelle Übersicht stets unter <em>maikdemuth.de/skills</em>.</p>`;
     } else if (id === "logbuch") {
-      html = `<p>Aktuelle Notizen und Erfahrungsberichte werden laufend ergänzt. Live unter <em>maikdemuth.de/logbuch</em>.</p>`;
+      const dir = resolve(contentRoot, "logbuch");
+      try {
+        const files = (await fs.readdir(dir))
+          .filter((f) => f.endsWith(".md"))
+          .sort();
+        const parts: string[] = [];
+        for (const f of files) {
+          const raw = await fs.readFile(resolve(dir, f), "utf-8");
+          const { data, content } = matter(raw);
+          const title = (data.title as string) || f.replace(/\.md$/, "");
+          const date = (data.date as string) || "";
+          parts.push(`<section class="logbuch-entry">
+            <h3>${escapeHtml(title)}</h3>
+            ${date ? `<p class="meta">${escapeHtml(date)}</p>` : ""}
+            ${marked.parse(content) as string}
+          </section>`);
+        }
+        html = parts.join("\n");
+      } catch {
+        html = "";
+      }
+    } else if (id.startsWith("logbuch__")) {
+      const slug = id.slice("logbuch__".length);
+      const filePath = resolve(contentRoot, "logbuch", `${slug}.md`);
+      const raw = await safeReadRaw(filePath);
+      if (raw) {
+        const { data, content } = matter(raw);
+        label = (data.title as string) || slug;
+        html = marked.parse(content) as string;
+      }
     }
 
     entries.push({
       id,
-      label: SECTION_LABELS[id] || id,
+      label,
       html: html || "<p>Keine Inhalte verfügbar.</p>",
     });
   }
