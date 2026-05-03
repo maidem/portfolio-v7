@@ -1,5 +1,6 @@
 <template>
   <div v-if="doc" class="information-page">
+    <h1 class="page-title">{{ doc.title }}</h1>
     <div class="content-block">
       <InformationContent :content="doc" />
     </div>
@@ -31,10 +32,16 @@ useHead({
 <style scoped>
 .information-page {
   width: 100%;
-  padding: 2rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5rem;
+  padding: 1rem 0 4rem;
+}
+
+.information-page > .page-title {
+  margin-bottom: 2rem;
+}
+
+.content-block {
+  margin-top: 1.25rem;
+  margin-bottom: 5rem;
 }
 
 .faq-block {

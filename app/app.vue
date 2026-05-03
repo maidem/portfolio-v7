@@ -1,6 +1,7 @@
 <template>
   <div>
     <NuxtRouteAnnouncer />
+    <div class="bg-fill" aria-hidden="true"></div>
     <div class="perspective-grid" aria-hidden="true">
       <svg
         viewBox="0 0 1440 900"
@@ -8,6 +9,7 @@
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs></defs>
+        <!-- Base lines in border color -->
         <g stroke="var(--color-border)" stroke-width="0.6" fill="none">
           <!-- Radiating lines from VP (720, 0) -->
           <line x1="720" y1="0" x2="0" y2="900" />
@@ -32,17 +34,51 @@
           <line x1="192" y1="660" x2="1248" y2="660" />
           <line x1="24" y1="870" x2="1416" y2="870" />
         </g>
+        <!-- Cyan overlay — same lines, low opacity; CSS mask fades both groups together -->
+        <g stroke="#03ffd0" stroke-width="0.8" stroke-opacity="0.3" fill="none">
+          <line x1="720" y1="0" x2="0" y2="900" />
+          <line x1="720" y1="0" x2="120" y2="900" />
+          <line x1="720" y1="0" x2="240" y2="900" />
+          <line x1="720" y1="0" x2="360" y2="900" />
+          <line x1="720" y1="0" x2="480" y2="900" />
+          <line x1="720" y1="0" x2="600" y2="900" />
+          <line x1="720" y1="0" x2="720" y2="900" />
+          <line x1="720" y1="0" x2="840" y2="900" />
+          <line x1="720" y1="0" x2="960" y2="900" />
+          <line x1="720" y1="0" x2="1080" y2="900" />
+          <line x1="720" y1="0" x2="1200" y2="900" />
+          <line x1="720" y1="0" x2="1320" y2="900" />
+          <line x1="720" y1="0" x2="1440" y2="900" />
+        </g>
       </svg>
     </div>
     <NuxtLayout>
-      <NuxtPage />
+      <NuxtPage :transition="pageTransition" />
     </NuxtLayout>
   </div>
 </template>
 
+<script setup lang="ts">
+const pageTransition = {
+  name: "page",
+  mode: "out-in" as const,
+  onAfterLeave() {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  },
+};
+</script>
+
 <style>
 @import "./assets/css/fonts.css";
 @import "./assets/css/global.css";
+
+.bg-fill {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--color-bg);
+  pointer-events: none;
+}
 
 .perspective-grid {
   position: fixed;

@@ -133,7 +133,6 @@ useHead({
 .entry-header {
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid var(--color-border);
 }
 .entry-date {
   margin: 0 0 1rem;
@@ -209,16 +208,41 @@ useHead({
   border-bottom: 1px solid var(--color-technobotanica);
   text-decoration: none;
 }
-/* Code blocks (Shiki output from @nuxt/content) */
+/* Code blocks*/
 .entry-body :deep(pre) {
   margin: 2rem 0 2.5rem;
-  padding: 1rem 1.25rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  padding: 1.25rem 1.5rem;
+  /* Override shiki CSS variables so spans don't get opaque backgrounds */
+  --shiki-default-bg: transparent;
+  --shiki-dark-bg: transparent;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px) saturate(160%);
+  -webkit-backdrop-filter: blur(6px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+  border-right-color: rgba(0, 0, 0, 0.06);
   border-radius: var(--radius-md);
-  overflow-x: auto;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.07),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   font-size: 0.85rem;
-  line-height: 1.6;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: hidden;
+}
+
+html.dark .entry-body :deep(pre) {
+  background: rgba(13, 17, 23, 0.22);
+  backdrop-filter: blur(6px) saturate(160%);
+  -webkit-backdrop-filter: blur(6px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(0, 0, 0, 0.35);
+  border-right-color: rgba(0, 0, 0, 0.35);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .entry-body :deep(pre code) {
   background: transparent;

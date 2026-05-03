@@ -1,42 +1,17 @@
 <template>
-  <section ref="root" class="info">
-    <header ref="header" class="info-header" />
-    <div ref="body" class="info-body">
+  <section class="info">
+    <div class="info-body">
       <ContentRenderer :value="content" />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick } from "vue";
-
 interface Props {
   content: any;
 }
 
 const props = defineProps<Props>();
-const root = ref<HTMLElement | null>(null);
-const header = ref<HTMLElement | null>(null);
-const body = ref<HTMLElement | null>(null);
-
-const decorate = () => {
-  if (!body.value || !header.value) return;
-  const h1 = body.value.querySelector("h1");
-  if (h1) {
-    h1.classList.add("page-title");
-    // Move the h1 out of the columned body so it spans full width
-    if (h1.parentElement !== header.value) {
-      header.value.innerHTML = "";
-      header.value.appendChild(h1);
-    }
-  }
-};
-
-onMounted(() => nextTick(decorate));
-watch(
-  () => props.content,
-  () => nextTick(decorate),
-);
 </script>
 
 <style scoped>
@@ -45,12 +20,9 @@ watch(
   min-width: 0;
 }
 
-.info-header:empty {
+/* The h1 is rendered by information.vue above the grid — hide the duplicate from ContentRenderer */
+.info-body :deep(h1) {
   display: none;
-}
-
-.info-header {
-  margin-bottom: 2rem;
 }
 
 .info-body {

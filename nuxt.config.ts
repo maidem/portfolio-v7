@@ -11,7 +11,10 @@ export default defineNuxtConfig({
   },
   content: {
     highlight: {
-      theme: "github-dark",
+      theme: {
+        default: "github-light",
+        dark: "github-dark",
+      },
       preload: ["typescript", "vue", "javascript"],
     },
   },

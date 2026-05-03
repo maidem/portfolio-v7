@@ -1,5 +1,6 @@
 <template>
   <div v-if="doc" class="information-page">
+    <h1 class="page-title">{{ doc.title }}</h1>
     <div class="content-wrapper">
       <!-- Main Content -->
       <InformationContent :content="doc" />
@@ -29,7 +30,7 @@ useHead({
 <style scoped>
 .information-page {
   width: 100%;
-  padding: 2rem 0;
+  padding: 1rem 0 4rem;
 }
 
 .content-wrapper {

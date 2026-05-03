@@ -339,14 +339,10 @@ const toggleTheme = () => {
   position: relative;
   z-index: 1;
   opacity: 0;
-  transform: translateY(12px);
-  transition:
-    opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .layout.is-mounted {
   opacity: 1;
-  transform: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .layout {

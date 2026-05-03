@@ -25,8 +25,8 @@ export default <RouterConfig>{
       });
     }
 
-    // For regular page navigation: scroll to top instantly so the leave
-    // animation plays at y=0 and the entering page is never offset.
-    return { left: 0, top: 0, behavior: "instant" };
+    // Regular navigation: let the page transition handle scrolling via
+    // onAfterLeave (see app.vue) so the scroll happens while invisible.
+    return false;
   },
 };
