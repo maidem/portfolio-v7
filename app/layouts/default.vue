@@ -749,15 +749,15 @@ const toggleTheme = () => {
   letter-spacing: -0.04em;
   text-align: center;
   color: var(--color-bg);
-  -webkit-text-stroke: 1px rgba(100, 100, 100, 0.55);
-  text-stroke: 1px rgba(100, 100, 100, 0.55);
+  -webkit-text-stroke: 1px rgba(100, 100, 100, 0.22);
+  text-stroke: 1px rgba(100, 100, 100, 0.22);
   /* Layered offset shadows → 3D extrusion depth */
   text-shadow:
-    2px 3px 0 rgba(140, 140, 140, 0.18),
-    4px 6px 0 rgba(130, 130, 130, 0.13),
-    6px 9px 0 rgba(120, 120, 120, 0.09),
-    8px 12px 0 rgba(110, 110, 110, 0.06),
-    10px 15px 0 rgba(100, 100, 100, 0.04);
+    2px 3px 0 rgba(140, 140, 140, 0.08),
+    4px 6px 0 rgba(130, 130, 130, 0.06),
+    6px 9px 0 rgba(120, 120, 120, 0.04),
+    8px 12px 0 rgba(110, 110, 110, 0.03),
+    10px 15px 0 rgba(100, 100, 100, 0.02);
   white-space: nowrap;
   opacity: 1;
   /* Konsistentes Glyph-Rendering, damit der Schriftzug beim

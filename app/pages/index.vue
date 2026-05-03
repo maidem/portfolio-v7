@@ -66,10 +66,11 @@ useHead({
 
 .faq-title {
   margin: 0;
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--color-text);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
 @media (min-width: 900px) {
